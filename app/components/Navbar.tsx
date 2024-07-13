@@ -4,21 +4,21 @@ import { ModeToggle } from "./ModeToggle";
 import { Button } from "@/components/ui/button"
 import { Briefcase, Paperclip } from "lucide-react";
 import { cvPDF } from "@/app/lib/interface";
-import { client } from "@/app/lib/sanity";
+// import { client } from "@/app/lib/sanity";
 
-async function getData(){
-    const query = `
-    *[_type == "about"]{
-      "fileURL":pdfFile.asset->url
-    }[0]
-    `;
+// async function getData(){
+//     const query = `
+//     *[_type == "about"]{
+//       "fileURL":pdfFile.asset->url
+//     }[0]
+//     `;
 
-    const data = await client.fetch(query);
-    return data;
-}
+//     const data = await client.fetch(query);
+//     return data;
+// }
 
-export default async function Navbar(){
-    const data:cvPDF = await getData();
+export default function Navbar(){
+    // const data:cvPDF = await getData();
     return (
         <div className="grid place-items-center">
             <div className="fixed bottom-8 top-auto z-40 h-fit w-fit rounded-lg border border-border shadow-lg md:bottom-auto md:top-8">
@@ -30,7 +30,7 @@ export default async function Navbar(){
                         <Link href={"/projects"}><Briefcase className="h-[1.2rem] w-[1.2rem] text-accent-foreground" /></Link>
                     </Button>
                     <Button asChild variant="outline" size="icon">
-                        <Link href={`${data.fileURL}`} rel="noopener noreferrer" target="_blank"><Paperclip className="h-[1.2rem] w-[1.2rem] text-accent-foreground"/></Link>
+                        <Link href={"/cv"}><Paperclip className="h-[1.2rem] w-[1.2rem] text-accent-foreground"/></Link>
                     </Button>
                     <ModeToggle/>
                 </div>

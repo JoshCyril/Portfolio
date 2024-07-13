@@ -1,6 +1,6 @@
 import { about } from "@/app/lib/interface";
 import { client, urlFor } from "@/app/lib/sanity";
-import { Github, Linkedin, Bot, Mail, ArrowUpRightFromSquare, Send } from "lucide-react";
+import { Github, Linkedin, Bot, Mail, ArrowUpRightFromSquare, Send, MapPin } from "lucide-react";
 import {
     Avatar,
     AvatarFallback,
@@ -103,8 +103,8 @@ export default async function Main() {
             </div>
             <div className="absolute top-10 col-span-4 flex items-center">
                 <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
-                <span className="text-md pr-2 font-medium">last visit:</span>
-                <span className="text-md font-regular">UK</span>
+                {/* <span className="text-md pr-2 font-medium"><MapPin size={14}/></span> */}
+                <span className="text-md font-regular">Swansea, Wales UK</span>
             </div>
         </div>
     </div>
