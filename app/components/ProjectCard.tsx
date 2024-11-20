@@ -23,7 +23,7 @@ export default function ProjectCard(project:simpleProject) {
                             {project.tags.map((tag, idx) =>(
                             <Tooltip key={idx}>
                                 <TooltipTrigger>
-                                    <Image src={urlFor(tag.tagImg).url()} alt={tag.title+" image"} width={24} height={24} className="rounded-md grayscale hover:grayscale-0"/>
+                                    <Image src={urlFor(tag.tagImg).url()} alt={tag.title+" image"} width={24} height={24} className="rounded-md"/>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     <p>{tag.title}</p>
@@ -37,12 +37,12 @@ export default function ProjectCard(project:simpleProject) {
                     </div>
 
                     {/* Content */}
-                    <CardContent className="mt-8 min-h-full px-4 py-2 sm:min-h-52">
+                    <CardContent className="mt-6 min-h-full px-4 py-2 sm:min-h-52">
                         <div className="flex content-center justify-between">
-                            <h3 className="text-xl font-bold">{project.title}</h3>
-                            <h4 className="text-right font-medium text-muted-foreground">{project.proDate}</h4>
+                            <h3 className="self-center text-xl font-bold">{project.title}</h3>
+                            <h4 className="self-center text-right font-medium text-muted-foreground/90">{project.proDate}</h4>
                         </div>
-                        <p className="mt-2 line-clamp-5 text-base font-normal leading-loose">{project.description}</p>
+                        <p className="mt-2 line-clamp-5 text-base font-normal leading-loose text-muted-foreground">{project.description}</p>
                     </CardContent>
                     <CardFooter className="bottom-2 mt-2 grid grid-cols-2 gap-2 text-base">
                         <Button asChild variant="cardb">
