@@ -80,7 +80,7 @@ export default async function E3(){
                                         <div className="prose prose-lg prose-blue ml-4 max-w-none p-3 text-base dark:prose-invert prose-a:text-primary prose-li:marker:text-primary md:text-lg">
                                             <PortableText value={eu.content} />
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                         	))}
@@ -96,7 +96,7 @@ export default async function E3(){
                         </div>
 
                         <div className="div flex flex-wrap">
-                            
+
                             {data.edu.map((ed, idx) =>(
                             <div key={idx} className="mb-5 basis-full px-3 sm:basis-1/2 md:basis-1/2 lg:basis-full">
                                 <div className="relative h-fit rounded-lg bg-secondary p-1 shadow-sm">
@@ -109,7 +109,7 @@ export default async function E3(){
                                             <div className="flex-col items-center text-sm">
                                                 <div>{ed.uni.name} </div>
                                                 <div>{ed.uni.location} </div>
-                                                
+
                                             </div>
                                         </div>
                                     </div>
@@ -138,7 +138,7 @@ export default async function E3(){
                                     <Laptop2 strokeWidth={0.5} absoluteStrokeWidth />
                                     </div>
                                     <div className="ml-3 flex items-center p-2">
-                                        <div className="font-regular">Web Dev
+                                        <div className="font-regular">Web Architect
                                         </div>
                                     </div>
                                 </div>
@@ -150,7 +150,7 @@ export default async function E3(){
                                     <Box strokeWidth={0.5} absoluteStrokeWidth />
                                     </div>
                                     <div className="ml-3 flex items-center p-2">
-                                        <div className="font-regular">Blockchain
+                                        <div className="font-regular">Custom AI Agent
                                         </div>
                                     </div>
                                 </div>
@@ -162,7 +162,7 @@ export default async function E3(){
                                     <PencilRuler strokeWidth={0.5} absoluteStrokeWidth />
                                     </div>
                                     <div className="ml-3 flex items-center p-2">
-                                        <div className="font-regular">Branding, UI/UX
+                                        <div className="font-regular">Workflow Automation
                                         </div>
                                     </div>
                                 </div>

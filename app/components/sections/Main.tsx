@@ -37,7 +37,7 @@ export default async function Main() {
                         {/* <AvatarImage src={urlFor(data.profileIcon).url()} alt="@joshcyril"/> */}
                         <AvatarFallback>JC</AvatarFallback>
                     </Avatar>
-                    <span className="ml-2 md:ml-4">Hello,</span> 
+                    <span className="ml-2 md:ml-4">Hello,</span>
                     </div>
                     <div className="pt-4 sm:pt-6">I’m <span className="text-4xl font-bold text-primary md:text-5xl">Joshua Cyril</span></div>
                 </div>
@@ -63,8 +63,8 @@ export default async function Main() {
                             <div className="flex gap-1">LinkedIn <ArrowUpRightFromSquare size={10}/></div>
                             </TooltipContent>
                         </Tooltip>
-                        
-                    
+
+
                         <Tooltip>
                             <TooltipTrigger>
                                 <Button asChild variant="ghosth" >
@@ -75,7 +75,7 @@ export default async function Main() {
                             <div className="flex gap-1">Discord <ArrowUpRightFromSquare size={10}/></div>
                             </TooltipContent>
                         </Tooltip>
-                    
+
                         <Tooltip>
                             <TooltipTrigger>
                                 <Button asChild variant="ghosth" >
@@ -97,14 +97,14 @@ export default async function Main() {
                                 <div className="flex gap-1">Github <ArrowUpRightFromSquare size={10}/></div>
                             </TooltipContent>
                         </Tooltip>
-                    
+
                     </TooltipProvider>
                 </div>
             </div>
             <div className="absolute top-10 col-span-4 flex items-center">
                 <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
                 {/* <span className="text-md pr-2 font-medium"><MapPin size={14}/></span> */}
-                <span className="text-md font-regular">Swansea, Wales UK</span>
+                <span className="text-md font-regular">Bengaluru, India</span>
             </div>
         </div>
     </div>
