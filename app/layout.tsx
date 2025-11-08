@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "./components/theme-provider"
-import Navbar from "./components/Navbar";
+import { AnimationProvider } from "./lib/animations-context";
+import ScrollProgress from "./components/animations/ScrollProgress";
+import NavbarAnimated from "./components/NavbarAnimated";
 import Line from "./components/Line";
 import Footer from "./components/Footer";
 
@@ -27,10 +29,13 @@ export default function RootLayout({
         enableSystem
         disableTransitionOnChange
       >
-      <Navbar/>
+      <AnimationProvider>
+      <ScrollProgress/>
+      <NavbarAnimated/>
       {children}
       <Line/>
       <Footer/>
+      </AnimationProvider>
       </ThemeProvider>
       </body>
     </html>

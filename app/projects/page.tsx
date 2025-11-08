@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { client } from "@/app/lib/sanity";
 import { simpleProject } from "@/app/lib/interface";
-import ProjectCard from "../components/ProjectCard";
+import ProjectCardAnimated from "../components/ProjectCardAnimated";
 
 export const revalidate = 30 // revalidate at most 30 sec
 
@@ -41,7 +41,7 @@ export default async function projects(){
 
             <div className="div flex flex-wrap py-3">
                 {data.map((project, idx) =>(
-                    <ProjectCard key={idx} {...project} />
+                    <ProjectCardAnimated key={idx} {...project} />
                 ))}
             </div>
         </div>

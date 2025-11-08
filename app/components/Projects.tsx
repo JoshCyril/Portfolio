@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { client } from "../lib/sanity";
 import { simpleProject } from "../lib/interface";
-import ProjectCard from "./ProjectCard";
+import ProjectsAnimated from "./ProjectsAnimated";
 
 export const revalidate = 30 // revalidate at most 30 sec
 
@@ -28,23 +27,5 @@ async function getData(){
 
 export default async function projects(){
     const data:simpleProject[] = await getData();
-
-    return (
-        <div className="mb-10 grid h-fit place-items-center py-6">
-
-        <div className="z-10 w-11/12 max-w-screen-2xl">
-
-            <div className="relative col-span-4 mb-4 ml-3 flex w-full basis-full items-center py-2">
-                <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
-                <span className="flex text-2xl font-bold md:text-3xl">Check out my <Link href="/projects" className="ml-2 hover:underline">Projects</Link></span>
-            </div>
-
-            <div className="flex flex-wrap py-3">
-                {data.map((project, idx) =>(
-                    <ProjectCard key={idx} {...project} />
-                ))}
-            </div>
-        </div>
-    </div>
-    )
+    return <ProjectsAnimated projects={data} />;
 }
