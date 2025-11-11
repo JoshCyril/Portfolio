@@ -138,15 +138,15 @@ export default function E3Animated({ data }: E3AnimatedProps) {
                   className="mb-5 basis-full px-3"
                   style={{ opacity: 0 }}
                 >
-                  <div className="relative h-fit rounded-lg bg-secondary p-1 shadow-sm">
+                  <div className="group relative h-fit rounded-lg bg-secondary p-1 shadow-sm">
                     <div className="grid grid-cols-5">
-                      <div className="relative col-span-1 grid h-20 w-full place-items-center overflow-hidden rounded-lg bg-gradient-to-r from-primary/10 to-primary/20 object-cover shadow-inner">
+                      <div className="relative col-span-1 flex h-20 w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-r from-primary/10 to-primary/20 shadow-inner">
                         <Image
                           src={urlFor(eu.company.Img).url()}
                           alt={eu.company.name + ' image'}
                           width={120}
                           height={120}
-                          className="z-20 ml-10 h-full w-full rounded-3xl bg-primary object-cover shadow-2xl transition duration-0 ease-in-out hover:mr-3 hover:duration-300"
+                          className="z-20 h-full w-full bg-primary object-cover object-center shadow-2xl grayscale transition-all duration-300 ease-in-out group-hover:grayscale-0"
                         />
                       </div>
                       <div className="col-span-4 ml-2 p-2 pr-3">
@@ -189,15 +189,15 @@ export default function E3Animated({ data }: E3AnimatedProps) {
                   className="mb-5 basis-full px-3 sm:basis-1/2 md:basis-1/2 lg:basis-full"
                   style={{ opacity: 0 }}
                 >
-                  <div className="relative h-fit rounded-lg bg-secondary p-1 shadow-sm">
+                  <div className="group relative h-fit rounded-lg bg-secondary p-1 shadow-sm">
                     <div className="grid grid-cols-4">
-                      <div className="relative col-span-1 grid h-20 w-full place-items-center overflow-hidden rounded-lg bg-gradient-to-r from-primary/10 to-primary/20 object-cover shadow-inner">
+                      <div className="relative col-span-1 flex h-20 w-full items-center justify-center overflow-hidden rounded-lg bg-gradient-to-r from-primary/10 to-primary/20 shadow-inner">
                         <Image
                           src={urlFor(ed.uni.Img).url()}
                           alt={ed.uni.name + ' image'}
                           width={120}
                           height={120}
-                          className="z-20 ml-10 h-full w-full rounded-3xl bg-primary object-cover shadow-2xl transition duration-0 ease-in-out hover:mr-3 hover:duration-300"
+                          className="z-20 h-full w-full bg-primary object-cover object-center shadow-2xl grayscale transition-all duration-300 ease-in-out group-hover:grayscale-0"
                         />
                       </div>
                       <div className="col-span-3 ml-2 p-2">

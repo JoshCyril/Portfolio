@@ -153,7 +153,7 @@ export default function AboutAnimated({ data }: AboutAnimatedProps) {
               className="relative basis-full rounded-lg bg-secondary p-6 shadow-sm flex flex-col"
               style={{ height: '100%', minHeight: '600px', overflow: 'visible' }}
             >
-              <div className="mb-4 text-lg font-medium sm:text-base flex-shrink-0">Skills</div>
+              {/* <div className="mb-4 text-lg font-medium sm:text-base flex-shrink-0">Skills</div> */}
               <div className="flex-1 w-full" style={{ height: '100%', minHeight: '550px', overflow: 'visible' }}>
                 <SkillsNodeGraph data={data} />
               </div>

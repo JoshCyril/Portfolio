@@ -17,9 +17,29 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-export default function ProjectCardAnimated(project: simpleProject) {
+interface ProjectCardAnimatedProps extends simpleProject {
+  isDimmed?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+}
+
+export default function ProjectCardAnimated({ isDimmed = false, onMouseEnter, onMouseLeave, ...project }: ProjectCardAnimatedProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Apply dimming effect when isDimmed prop changes
+  useEffect(() => {
+    if (!wrapperRef.current) return;
+
+    if (isDimmed) {
+      wrapperRef.current.style.opacity = '0.8';
+      wrapperRef.current.style.transition = 'opacity 0.3s ease';
+    } else {
+      wrapperRef.current.style.opacity = '1';
+      wrapperRef.current.style.transition = 'opacity 0.3s ease';
+    }
+  }, [isDimmed]);
 
   useEffect(() => {
     if (!cardRef.current || prefersReducedMotion()) return;
@@ -28,6 +48,7 @@ export default function ProjectCardAnimated(project: simpleProject) {
     const image = imageRef.current;
 
     // Image hover animation - smooth zoom and lift (replaces CSS hover:mt-5)
+    // Note: Grayscale effect is handled by CSS classes (grayscale hover:grayscale-0)
     const handleMouseEnter = () => {
       if (!image) return;
 
@@ -37,6 +58,11 @@ export default function ProjectCardAnimated(project: simpleProject) {
         duration: 0.4,
         ease: 'power2.out',
       });
+
+      // Notify parent component that this card is hovered
+      if (onMouseEnter) {
+        onMouseEnter();
+      }
     };
 
     const handleMouseLeave = () => {
@@ -48,6 +74,11 @@ export default function ProjectCardAnimated(project: simpleProject) {
         duration: 0.6,
         ease: 'power2.out',
       });
+
+      // Notify parent component that this card is no longer hovered
+      if (onMouseLeave) {
+        onMouseLeave();
+      }
     };
 
     if (card) {
@@ -61,14 +92,18 @@ export default function ProjectCardAnimated(project: simpleProject) {
         card.removeEventListener('mouseleave', handleMouseLeave);
       }
     };
-  }, []);
+  }, [onMouseEnter, onMouseLeave]);
 
   return (
     <TooltipProvider>
-      <div className="basis-full p-3 sm:basis-1/2 md:basis-1/3 lg:basis-1/4">
+      <div
+        ref={wrapperRef}
+        className="basis-full p-3 sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+        data-project-card
+      >
         <Card
           ref={cardRef}
-          className="rounded-lg p-1 shadow hover:shadow-md"
+          className="group rounded-lg p-1 shadow hover:shadow-md"
         >
           {/* image */}
           <div className="relative grid h-40 place-items-center overflow-hidden rounded-lg bg-background bg-gradient-to-r from-primary/10 to-primary/20 object-cover shadow-inner">
@@ -78,13 +113,13 @@ export default function ProjectCardAnimated(project: simpleProject) {
               alt={project.slug + ' image'}
               width={720}
               height={720}
-              className="z-20 mt-12 w-11/12 rounded-3xl bg-primary object-cover shadow-2xl"
+              className="z-20 mt-12 w-11/12 rounded-3xl bg-primary object-cover shadow-2xl grayscale ease-in-out group-hover:grayscale-0"
             />
           </div>
 
           {/* Stacks */}
           <div className="relative z-30 h-fit">
-            <div className="align-center absolute -top-5 flex h-fit w-fit items-center justify-center gap-2 rounded-lg bg-secondary p-2 text-3xl shadow">
+            <div className="align-center absolute -top-5 flex h-fit w-fit items-center justify-center gap-2 rounded-lg bg-secondary p-2 text-3xl">
               {project.tags.map((tag, idx) => (
                 <Tooltip key={idx}>
                   <TooltipTrigger>
@@ -93,7 +128,7 @@ export default function ProjectCardAnimated(project: simpleProject) {
                       alt={tag.title + ' image'}
                       width={24}
                       height={24}
-                      className="rounded-md"
+                      className="rounded-md grayscale ease-in-out group-hover:grayscale-0"
                     />
                   </TooltipTrigger>
                   <TooltipContent>

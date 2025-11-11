@@ -32,7 +32,7 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const simulationRef = useRef<Simulation<Node, undefined> | null>(null);
   const nodesRef = useRef<Node[]>([]);
-  const nodeElementsRef = useRef<Map<string, { group: SVGGElement; image: SVGImageElement; text: SVGTextElement }>>(new Map());
+  const nodeElementsRef = useRef<Map<string, { group: SVGGElement; image: HTMLImageElement; text: SVGTextElement; foreignObject: SVGForeignObjectElement }>>(new Map());
   const [dimensions, setDimensions] = useState({ width: 500, height: 450 }); // Default dimensions
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [screenSize, setScreenSize] = useState(() => {
@@ -68,15 +68,19 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
     const minCount = Math.min(...counts, 0);
     const countRange = maxCount - minCount || 1; // Use 1 as fallback to avoid division by zero
 
-    // Responsive base sizes - smaller on mobile
+    // Responsive base sizes with 4x ratio
     // Use screenSize.width if available, otherwise default to desktop
     const width = screenSize.width > 0 ? screenSize.width : 1024;
-    const isMobile = width < 768;
-    const isTablet = width >= 768 && width < 1024;
+    const isMobile = width < 768; // xl: mobile
+    const isTablet = width >= 768 && width < 1024; // 2xl: tablet
+    // Desktop is 3xl (>= 1024)
 
-    // Max radius limits based on screen size - smaller nodes
-    const maxRadiusLimit = isMobile ? 24 : isTablet ? 28 : 32;
-    const minRadius = isMobile ? 16 : isTablet ? 18 : 20;
+    // Max radius limits based on screen size - max 32px for all screens
+    // Mobile (xl): max radius 32px, min 12px
+    // Tablet (2xl): max radius 32px, min 12px
+    // Desktop (3xl): max radius 32px, min 12px
+    const maxRadiusLimit = 32; // Maximum radius 32px for all screen sizes
+    const minRadius = 12; // Minimum radius 12px for all screen sizes
     const sizeRange = maxRadiusLimit - minRadius;
 
     // Include all tags, including those with 0 projects
@@ -84,8 +88,13 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
       // For 0-count tags, use minimum radius; otherwise size relative to project count
       // If all tags have the same count (including 0), all nodes will have minimum radius
       const normalizedCount = countRange > 0 ? (tag.tag_count - minCount) / countRange : 0;
-      // Size relative to project count, capped at max limit
-      const radius = Math.min(minRadius + normalizedCount * sizeRange, maxRadiusLimit);
+      // Exponential scaling - makes larger nodes more prominent
+      // Use exponential function: e^(normalizedCount * scalingFactor) - 1, then normalize
+      const exponentialFactor = Math.exp(normalizedCount * 2) - 1; // e^(2x) - 1 gives exponential curve
+      const maxExponential = Math.exp(1 * 2) - 1; // Maximum value when normalizedCount = 1
+      const exponentialNormalized = maxExponential > 0 ? exponentialFactor / maxExponential : 0;
+      // Size relative to project count with exponential scaling, capped at max limit
+      const radius = Math.min(minRadius + exponentialNormalized * sizeRange, maxRadiusLimit);
 
       return {
         id: `node-${idx}`,
@@ -111,39 +120,40 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
     const updateDimensions = () => {
       if (!containerRef.current) return;
 
-      const rect = containerRef.current.getBoundingClientRect();
-
-      // Use full container size - get parent to cover entire section
-      let width = rect.width;
-      let height = rect.height;
-
-      // Fallback to offset/client dimensions if getBoundingClientRect returns 0
-      if (width === 0 || height === 0) {
-        width = containerRef.current.offsetWidth || containerRef.current.clientWidth || 500;
-        height = containerRef.current.offsetHeight || containerRef.current.clientHeight || 450;
-      }
-
-      // Get parent container to cover entire section
+      // Get parent container (flex-1 w-full div) - this is the actual container for the graph
       const parent = containerRef.current.parentElement;
-      if (parent) {
-        const parentRect = parent.getBoundingClientRect();
-        const parentHeight = parentRect.height;
-        // Use full parent height minus title and padding to cover entire section
-        if (parentHeight > 0) {
-          height = Math.max(height, parentHeight - 60); // Account for title (mb-4) and padding
-        }
+      if (!parent) {
+        // Fallback to container's own dimensions
+        const rect = containerRef.current.getBoundingClientRect();
+        setDimensions({
+          width: rect.width || containerRef.current.offsetWidth || 500,
+          height: rect.height || containerRef.current.offsetHeight || 450
+        });
+        return;
       }
 
-      // Responsive height based on screen size - ensure full section coverage
-      const widthForBreakpoint = screenSize.width > 0 ? screenSize.width : window.innerWidth || 1024;
+      // Get parent's dimensions - use full dimensions without padding subtraction
+      const parentRect = parent.getBoundingClientRect();
+      let width = parentRect.width;
+      let height = parentRect.height;
+
+      // Fallback if getBoundingClientRect returns 0
+      if (width === 0 || height === 0) {
+        width = parent.clientWidth || parent.offsetWidth || 500;
+        height = parent.clientHeight || parent.offsetHeight || 450;
+      }
+
+      // Use full container dimensions - no padding subtraction
+      // The viewBox should match the container exactly
+      const finalWidth = Math.max(width, 300);
+
+      // Responsive dimensions based on screen size
+      const widthForBreakpoint = screenSize.width > 0 ? screenSize.width : (typeof window !== 'undefined' ? window.innerWidth : 1024);
       const isMobile = widthForBreakpoint < 768;
       const isTablet = widthForBreakpoint >= 768 && widthForBreakpoint < 1024;
-      // Larger minimum heights to cover entire section
-      const minHeight = isMobile ? 500 : isTablet ? 600 : 700;
 
-      // Ensure minimum dimensions and use full available space
-      const finalWidth = Math.max(width, 300);
-      const finalHeight = Math.max(height, minHeight);
+      // Height should use the parent's height, but ensure minimum for each breakpoint
+      const finalHeight = Math.max(height, isMobile ? 400 : isTablet ? 500 : 600);
 
       if (finalWidth > 0 && finalHeight > 0) {
         setDimensions({ width: finalWidth, height: finalHeight });
@@ -178,6 +188,11 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
 
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
+      // Also observe parent container to catch size changes
+      const parent = containerRef.current.parentElement;
+      if (parent) {
+        resizeObserver.observe(parent);
+      }
     }
 
     window.addEventListener('resize', handleResize);
@@ -206,9 +221,16 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
       return;
     }
 
-    // Use dimensions, but fallback to defaults if invalid
-    const width = dimensions.width > 0 ? dimensions.width : 500;
-    const height = dimensions.height > 0 ? dimensions.height : 450;
+    // Get actual container dimensions for viewBox to fully cover the div
+    // Use getBoundingClientRect for most accurate measurements
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    const containerWidth = containerRect?.width || dimensions.width || 500;
+    const containerHeight = containerRect?.height || dimensions.height || 450;
+
+    // Ensure we have valid dimensions
+    if (containerWidth <= 0 || containerHeight <= 0) {
+      return;
+    }
 
     const svg = svgRef.current;
 
@@ -221,13 +243,17 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
     // Clear SVG
     svg.innerHTML = '';
 
-    // Set SVG dimensions to cover entire section
+    // Set SVG dimensions to cover entire section - viewBox matches container exactly
     svg.setAttribute('width', '100%');
     svg.setAttribute('height', '100%');
-    svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    svg.setAttribute('viewBox', `0 0 ${containerWidth} ${containerHeight}`);
+    svg.setAttribute('preserveAspectRatio', 'none'); // Allow stretching to fully cover
     svg.style.width = '100%';
     svg.style.height = '100%';
     svg.style.display = 'block';
+    svg.style.position = 'absolute';
+    svg.style.top = '0';
+    svg.style.left = '0';
 
     // Create defs for clip paths
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
@@ -291,16 +317,17 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
     nodesGroup.setAttribute('class', 'nodes-group');
     svg.appendChild(nodesGroup);
 
-    // Initialize node positions - start extremely close to center for Obsidian-like clustering
+    // Initialize node positions - start close to center for relaxed Obsidian-like clustering
     const initializedNodes: Node[] = nodes.map((node, idx) => {
-      // Start nodes extremely close to center - they'll form a very tight Obsidian-like cluster
+      // Start nodes near center - they'll cluster naturally through force simulation
+      // Use moderate spread to prevent initial overlap and glitching
       const angle = (idx / nodes.length) * Math.PI * 2;
-      const maxDistance = Math.min(width, height) * 0.03; // Even tighter initial spread
-      const distance = maxDistance * (0.02 + Math.random() * 0.06); // Very small spread
+      const maxDistance = Math.min(containerWidth, containerHeight) * 0.15; // Moderate initial spread
+      const distance = maxDistance * (0.4 + Math.random() * 0.4); // Moderate variation
       return {
         ...node,
-        x: width / 2 + Math.cos(angle) * distance,
-        y: height / 2 + Math.sin(angle) * distance,
+        x: containerWidth / 2 + Math.cos(angle) * distance,
+        y: containerHeight / 2 + Math.sin(angle) * distance,
       };
     });
 
@@ -309,17 +336,8 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
 
     // Create SVG elements for each node
     initializedNodes.forEach((node) => {
-      // Create clip path for rounded images
-      // Clip paths are defined in the defs and positioned relative to the node's transform
-      const clipPath = document.createElementNS('http://www.w3.org/2000/svg', 'clipPath');
-      clipPath.setAttribute('id', `clip-${node.id}`);
-      const clipCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      const clipRadius = node.radius * 1.6 / 2;
-      clipCircle.setAttribute('r', clipRadius.toString());
-      clipCircle.setAttribute('cx', '0');
-      clipCircle.setAttribute('cy', '0');
-      clipPath.appendChild(clipCircle);
-      defs.appendChild(clipPath);
+      // Calculate image size first
+      const imageSize = node.radius * 1.6;
 
       // Create group for node
       const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -327,16 +345,29 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
       group.setAttribute('data-node-id', node.id);
       group.style.cursor = 'grab';
 
-      // Create image - size based on radius
-      const imageSize = node.radius * 1.6;
-      const image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
-      image.setAttribute('href', node.imageUrl);
-      image.setAttribute('width', imageSize.toString());
-      image.setAttribute('height', imageSize.toString());
-      image.setAttribute('clip-path', `url(#clip-${node.id})`);
-      image.style.cursor = 'grab';
-      image.setAttribute('opacity', '1');
-      image.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      // Use foreignObject to embed HTML img with rounded-md class
+      // This allows us to use Tailwind CSS classes for rounded corners
+      const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+      foreignObject.setAttribute('width', imageSize.toString());
+      foreignObject.setAttribute('height', imageSize.toString());
+      foreignObject.setAttribute('x', (-imageSize / 2).toString());
+      foreignObject.setAttribute('y', (-imageSize / 2).toString());
+
+      // Create HTML img element with rounded-md class
+      const img = document.createElement('img');
+      img.src = node.imageUrl;
+      img.className = 'rounded-md';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.cursor = 'grab';
+      img.style.opacity = '0.5';
+      img.style.filter = 'grayscale(100%)'; // Start with grayscale (black and white) by default
+      img.style.transition = 'filter 0.3s ease, opacity 0.3s ease'; // Smooth transition for grayscale effect
+      img.setAttribute('draggable', 'false');
+
+      foreignObject.appendChild(img);
+      group.appendChild(foreignObject);
 
       // Create text label (hidden by default, shown on hover via tooltip)
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -349,17 +380,27 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
       text.setAttribute('opacity', '0'); // Hidden, tooltip shows on hover
       text.textContent = node.tag_name;
 
-      group.appendChild(image);
       group.appendChild(text);
       nodesGroup.appendChild(group);
 
-      nodeElementsRef.current.set(node.id, { group, image, text });
+      nodeElementsRef.current.set(node.id, { group, image: img, text, foreignObject });
 
       // Hover handlers - show tooltip with name and project count
       // Use refs directly instead of state to avoid re-rendering
       const showTooltip = () => {
         setHoveredNodeId(node.id);
-        image.setAttribute('opacity', '0.8');
+
+        // Remove grayscale from hovered node to reveal color
+        img.style.filter = 'grayscale(0%)';
+        img.style.opacity = '1';
+
+        // Keep other nodes grayscale and slightly reduce opacity
+        nodeElementsRef.current.forEach((elements, nodeId) => {
+          if (nodeId !== node.id && elements.image) {
+            elements.image.style.filter = 'grayscale(100%)';
+            elements.image.style.opacity = '0.5'; // Reduce opacity for non-active nodes
+          }
+        });
 
         // Bring node group to front (move to end of parent for highest z-index in SVG)
         if (group.parentNode) {
@@ -374,9 +415,15 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
           }
 
           tooltipTitleRef.current.textContent = node.tag_name;
-          // Show project count in tooltip
-          tooltipCountRef.current.textContent = `${node.tag_count} ${node.tag_count === 1 ? 'project' : 'projects'}`;
-          tooltipCountRef.current.setAttribute('opacity', '1');
+          // Show project count in tooltip only if count > 0
+          const showCount = node.tag_count > 0;
+          if (showCount) {
+            tooltipCountRef.current.textContent = `${node.tag_count} ${node.tag_count === 1 ? 'project' : 'projects'}`;
+            tooltipCountRef.current.setAttribute('opacity', '1');
+          } else {
+            tooltipCountRef.current.textContent = '';
+            tooltipCountRef.current.setAttribute('opacity', '0');
+          }
 
           // Calculate tooltip dimensions (use temporary positioning)
           tooltipTitleRef.current.setAttribute('x', '0');
@@ -384,11 +431,11 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
           tooltipCountRef.current.setAttribute('x', '0');
           tooltipCountRef.current.setAttribute('y', '18');
 
-          // Get bounding boxes for both title and count
+          // Get bounding boxes - adjust based on whether count is shown
           const titleBbox = tooltipTitleRef.current.getBBox();
-          const countBbox = tooltipCountRef.current.getBBox();
+          const countBbox = showCount ? tooltipCountRef.current.getBBox() : { width: 0 };
           const tooltipWidth = Math.max(titleBbox.width, countBbox.width) + 24; // Padding
-          const tooltipHeight = 44; // Height for title and count
+          const tooltipHeight = showCount ? 44 : 32; // Height for title only or title + count
 
           // Calculate safe zone - ensure tooltip doesn't get cut off
           const safeZone = 80; // Safe zone for tooltip at edges
@@ -423,18 +470,18 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
           const nodeX = node.x;
           const nodeY = node.y;
 
-          // Adjust horizontal position if near left/right edges
+          // Adjust horizontal position if near left/right edges - use containerWidth
           if (nodeX - tooltipWidth / 2 < safeZone) {
             tooltipX = safeZone - nodeX + tooltipWidth / 2;
-          } else if (nodeX + tooltipWidth / 2 > width - safeZone) {
-            tooltipX = (width - safeZone) - nodeX - tooltipWidth / 2;
+          } else if (nodeX + tooltipWidth / 2 > containerWidth - safeZone) {
+            tooltipX = (containerWidth - safeZone) - nodeX - tooltipWidth / 2;
           }
 
-          // Adjust vertical position if near top/bottom edges
+          // Adjust vertical position if near top/bottom edges - use containerHeight
           if (nodeY + tooltipY < safeZone) {
             // Move tooltip below node if too close to top
             tooltipY = node.radius + 12;
-          } else if (nodeY + tooltipY + tooltipHeight > height - safeZone) {
+          } else if (nodeY + tooltipY + tooltipHeight > containerHeight - safeZone) {
             // Move tooltip above if too close to bottom
             tooltipY = -tooltipHeight - node.radius - 12;
           }
@@ -446,11 +493,18 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
           tooltipBgRef.current.setAttribute('height', tooltipHeight.toString());
 
           // Position title and count in tooltip
-          tooltipTitleRef.current.setAttribute('x', tooltipX.toString());
-          tooltipTitleRef.current.setAttribute('y', (tooltipY + 18).toString());
-          tooltipCountRef.current.setAttribute('x', tooltipX.toString());
-          tooltipCountRef.current.setAttribute('y', (tooltipY + 32).toString());
-          tooltipCountRef.current.setAttribute('opacity', '1');
+          if (showCount) {
+            tooltipTitleRef.current.setAttribute('x', tooltipX.toString());
+            tooltipTitleRef.current.setAttribute('y', (tooltipY + 18).toString());
+            tooltipCountRef.current.setAttribute('x', tooltipX.toString());
+            tooltipCountRef.current.setAttribute('y', (tooltipY + 32).toString());
+            tooltipCountRef.current.setAttribute('opacity', '1');
+          } else {
+            // Center title vertically when no count
+            tooltipTitleRef.current.setAttribute('x', tooltipX.toString());
+            tooltipTitleRef.current.setAttribute('y', (tooltipY + tooltipHeight / 2 + 6).toString());
+            tooltipCountRef.current.setAttribute('opacity', '0');
+          }
 
           tooltipGroupRef.current.setAttribute('opacity', '1');
         }
@@ -458,7 +512,19 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
 
       const hideTooltip = () => {
         setHoveredNodeId(null);
-        image.setAttribute('opacity', '1');
+
+        // Restore grayscale to hovered node (back to black and white)
+        img.style.filter = 'grayscale(100%)';
+        img.style.opacity = '0.5';
+
+        // Restore all nodes to grayscale with full opacity
+        nodeElementsRef.current.forEach((elements) => {
+          if (elements.image) {
+            elements.image.style.filter = 'grayscale(100%)';
+            elements.image.style.opacity = '0.5';
+          }
+        });
+
         if (tooltipGroupRef.current) {
           tooltipGroupRef.current.setAttribute('opacity', '0');
         }
@@ -501,18 +567,20 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
       }
     });
 
-    // Create force simulation - Obsidian-like extremely tight clustering with minimal spreading
-    const area = width * height;
-    // Almost no repulsion - nodes stick together very tightly like Obsidian graph
-    const chargeStrength = -Math.sqrt(area) * 0.02;
+    // Create force simulation - Relaxed Obsidian-like clustering without glitching
+    const area = containerWidth * containerHeight;
+    // Very weak repulsion - allows nodes to cluster but prevents glitching
+    const chargeStrength = -Math.sqrt(area) * 0.008;
+    const centerX = containerWidth / 2;
+    const centerY = containerHeight / 2;
     const simulation = forceSimulation<Node>(initializedNodes)
       .force('charge', forceManyBody<Node>().strength(chargeStrength))
-      // Extremely strong center force to keep nodes close to center
-      .force('center', forceCenter(width / 2, height / 2).strength(0.8))
-      // Minimal collision spacing - nodes stick together with very tiny gaps like Obsidian
-      .force('collision', forceCollide<Node>().radius((d) => d.radius + 1).strength(0.98))
-      .alphaDecay(0.012)
-      .velocityDecay(0.75)
+      // Moderate center force to keep nodes clustered at center without being too aggressive
+      .force('center', forceCenter(centerX, centerY).strength(0.7))
+      // Relaxed collision spacing - prevents overlap without being too tight
+      .force('collision', forceCollide<Node>().radius((d) => d.radius + 4).strength(0.8))
+      .alphaDecay(0.022) // Normal decay for smooth settling
+      .velocityDecay(0.4) // Lower damping for more natural, relaxed motion
       .alpha(1)
       .restart();
 
@@ -526,36 +594,24 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
 
         const { group, image, text } = elements;
 
-        // Keep nodes within bounds with safe zone for tooltips, but allow tighter clustering
-        // Safe zone ensures tooltips don't get cut off at edges
-        const safeZone = 80; // Space reserved for tooltips
-        const nodeMargin = 10; // Reduced margin for tighter clustering
-        // Allow nodes to cluster more tightly towards center
-        const centerX = width / 2;
-        const centerY = height / 2;
-        const maxDistanceFromCenter = Math.min(width, height) * 0.25; // Limit distance from center
-        const distanceFromCenter = Math.sqrt((node.x - centerX) ** 2 + (node.y - centerY) ** 2);
+        // Use full viewBox dimensions - no padding, no safe zones
+        // Only keep nodes within bounds based on node radius to prevent clipping
+        const minX = node.radius;
+        const maxX = containerWidth - node.radius;
+        const minY = node.radius;
+        const maxY = containerHeight - node.radius;
 
-        if (distanceFromCenter > maxDistanceFromCenter) {
-          // Pull node back towards center if too far
-          const angle = Math.atan2(node.y - centerY, node.x - centerX);
-          node.x = centerX + Math.cos(angle) * maxDistanceFromCenter;
-          node.y = centerY + Math.sin(angle) * maxDistanceFromCenter;
-        }
-
-        // Still respect safe zone boundaries
-        node.x = Math.max(node.radius + nodeMargin + safeZone, Math.min(width - node.radius - nodeMargin - safeZone, node.x));
-        node.y = Math.max(node.radius + nodeMargin + safeZone, Math.min(height - node.radius - nodeMargin - safeZone, node.y));
+        // Clamp to boundaries if outside
+        if (node.x < minX) node.x = minX;
+        if (node.x > maxX) node.x = maxX;
+        if (node.y < minY) node.y = minY;
+        if (node.y > maxY) node.y = maxY;
 
         // Update group transform
         group.setAttribute('transform', `translate(${node.x},${node.y})`);
 
-        // Update image (centered in group)
-        const imageSize = node.radius * 1.6;
-        image.setAttribute('x', (-imageSize / 2).toString());
-        image.setAttribute('y', (-imageSize / 2).toString());
-
-        // Clip path is relative to the node's transform, so no need to update its position
+        // foreignObject positioning is set during creation and doesn't need updating
+        // The transform on the group handles the node's position
 
         // Update text position (below image, hidden)
         text.setAttribute('x', '0');
@@ -572,7 +628,7 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
         simulationRef.current = null;
       }
     };
-  }, [nodes, dimensions, screenSize.width]); // Removed hoveredNodeId to prevent re-render on hover
+  }, [nodes, dimensions.width, dimensions.height, screenSize.width]); // Include dimensions to update viewBox on resize
 
   // Update ref when state changes to avoid closure issues
   useEffect(() => {
@@ -591,8 +647,10 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
 
     let animationFrameId: number;
     let isActive = true;
-    const width = dimensions.width;
-    const height = dimensions.height;
+    // Get actual container dimensions for tooltip positioning
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    const width = containerRect?.width || dimensions.width;
+    const height = containerRect?.height || dimensions.height;
 
     const updateTooltipPosition = () => {
       if (!isActive) return;
@@ -628,6 +686,7 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
         const tooltipWidth = parseFloat(tooltipBgRef.current.getAttribute('width') || '100');
         const tooltipHeight = parseFloat(tooltipBgRef.current.getAttribute('height') || '44');
         const safeZone = 80;
+        const showCount = node.tag_count > 0;
 
         // Position tooltip above node, but adjust if near edges
         let tooltipX = 0;
@@ -655,12 +714,19 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
         // Update tooltip element positions relative to group (with safe zone adjustments)
         tooltipBgRef.current.setAttribute('x', (-tooltipWidth / 2 + tooltipX).toString());
         tooltipBgRef.current.setAttribute('y', tooltipY.toString());
-        // Position title and count
-        tooltipTitleRef.current.setAttribute('x', tooltipX.toString());
-        tooltipTitleRef.current.setAttribute('y', (tooltipY + 18).toString());
-        tooltipCountRef.current.setAttribute('x', tooltipX.toString());
-        tooltipCountRef.current.setAttribute('y', (tooltipY + 32).toString());
-        tooltipCountRef.current.setAttribute('opacity', '1');
+        // Position title and count based on whether count is shown
+        if (showCount) {
+          tooltipTitleRef.current.setAttribute('x', tooltipX.toString());
+          tooltipTitleRef.current.setAttribute('y', (tooltipY + 18).toString());
+          tooltipCountRef.current.setAttribute('x', tooltipX.toString());
+          tooltipCountRef.current.setAttribute('y', (tooltipY + 32).toString());
+          tooltipCountRef.current.setAttribute('opacity', '1');
+        } else {
+          // Center title vertically when no count
+          tooltipTitleRef.current.setAttribute('x', tooltipX.toString());
+          tooltipTitleRef.current.setAttribute('y', (tooltipY + tooltipHeight / 2 + 6).toString());
+          tooltipCountRef.current.setAttribute('opacity', '0');
+        }
       }
 
       // Continue updating while hovering
@@ -739,12 +805,12 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-full rounded-lg overflow-visible bg-transparent"
+      className="relative w-full h-full overflow-visible bg-transparent"
       style={{
         position: 'relative',
         width: '100%',
         height: '100%',
-        minHeight: '600px',
+        minHeight: `${dimensions.height}px`,
       }}
     >
       <svg

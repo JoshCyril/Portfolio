@@ -151,6 +151,7 @@ export const staggerFadeUp = (
     duration?: number;
     stagger?: number;
     distance?: number;
+    delay?: number;
     scrollTrigger?: ScrollTrigger.Vars;
   } = {}
 ) => {
@@ -163,6 +164,7 @@ export const staggerFadeUp = (
     duration = animationConfig.duration.normal,
     stagger = animationConfig.stagger.medium,
     distance = 50,
+    delay = 0,
     scrollTrigger,
   } = options;
 
@@ -177,6 +179,7 @@ export const staggerFadeUp = (
       y: 0,
       duration,
       stagger,
+      delay,
       ease: animationConfig.ease.easeOut,
       scrollTrigger:
         scrollTrigger ||

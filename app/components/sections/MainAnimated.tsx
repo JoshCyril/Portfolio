@@ -326,13 +326,12 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
       );
       if (links.length > 0) {
         // Use setTimeout to delay the animation instead of delay parameter
-        setTimeout(() => {
           staggerFadeUp(links, {
+            delay: 1,
             duration: 0.5,
             stagger: 0.1,
             distance: 20,
           });
-        }, 1000);
       }
     }
 
