@@ -15,8 +15,7 @@ import { prefersReducedMotion } from '@/app/lib/animations';
 
 export function ModeToggleAnimated() {
   const { setTheme, theme, resolvedTheme } = useTheme();
-  const iconRef = React.useRef<HTMLButtonElement>(null);
-  const buttonRef = React.useRef<HTMLButtonElement>(null);
+  const buttonRef = React.useRef<HTMLButtonElement | null>(null);
   const rippleContainerRef = React.useRef<HTMLDivElement | null>(null);
   const previousThemeRef = React.useRef<string | undefined>(theme);
   const previousResolvedThemeRef = React.useRef<string | undefined>(resolvedTheme);
@@ -128,12 +127,12 @@ export function ModeToggleAnimated() {
     const resolvedThemeChanged = previousResolvedThemeRef.current !== resolvedTheme;
 
     if ((themeChanged || resolvedThemeChanged) && buttonRef.current) {
-      // Use resolvedTheme for more accurate theme detection
-      const newTheme = resolvedTheme || theme;
+      // Use resolvedTheme for more accurate theme detection - ensure we have a valid string
+      const newTheme = resolvedTheme || theme || 'system';
 
       // Rotate icon animation
-      if (iconRef.current && !prefersReducedMotion()) {
-        gsap.to(iconRef.current, {
+      if (buttonRef.current && !prefersReducedMotion()) {
+        gsap.to(buttonRef.current, {
           rotation: '+=360',
           duration: 0.5,
           ease: 'power2.out',
@@ -143,8 +142,9 @@ export function ModeToggleAnimated() {
       // Small delay to ensure DOM has updated with new theme class
       requestAnimationFrame(() => {
         if (buttonRef.current) {
-          // Create ripple effect with new theme
-          createThemeRipple(buttonRef.current, newTheme || theme);
+          // Create ripple effect with new theme - ensure we always have a valid string
+          const themeToUse = newTheme || theme || 'system';
+          createThemeRipple(buttonRef.current, themeToUse);
         }
       });
 
@@ -173,13 +173,7 @@ export function ModeToggleAnimated() {
         <Button
           variant="outline"
           size="icon"
-          ref={(node) => {
-            buttonRef.current = node;
-            // Also set iconRef for rotation animation
-            if (node) {
-              iconRef.current = node;
-            }
-          }}
+          ref={buttonRef}
         >
           <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />

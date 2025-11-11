@@ -9,22 +9,15 @@ import Image from "next/image";
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
     TableRow,
   } from "@/components/ui/table"
-  import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-  } from "@/components/ui/carousel"
 import { ArrowUpRightFromSquare } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { ProjectGallery } from "@/app/components/ProjectGallery";
 
 export const revalidate = 30 // revalidate at most 30 sec
 
@@ -121,31 +114,7 @@ export default async function ProjectRoute({params}:{params:{slug:string}}){
                     </div>
 
                     <div className="basis-full md:p-5 lg:p-6">
-                    <Carousel
-                    opts={{
-                        align: "start",
-                    }}
-                    className="w-full"
-                    >
-                        <CarouselContent>
-                            {data.gallery.map((gall, idx) => (
-                                <CarouselItem key={idx} className="basis-full sm:basis-1/2 md:basis-1/3 md:p-2 lg:basis-1/4 lg:p-3">
-                                    <div className="p-1">
-                                        <Card>
-                                            <CardContent className="overflow-hidden rounded-xl p-0">
-                                                <Image className="h-full w-full bg-cover bg-center" src={urlFor(gall.asset).url()} alt={idx+" image"} width={1000} height={1000}/>
-                                            </CardContent>
-                                        </Card>
-                                    </div>
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <div className="flex justify-center gap-5">
-                            <CarouselPrevious />
-                            <CarouselNext />
-                        </div>
-
-                    </Carousel>
+                        <ProjectGallery gallery={data.gallery} />
                     </div>
 
                     <div className="relative col-span-4 mb-4 ml-3 mt-6 flex w-full basis-full items-center py-2">

@@ -1,12 +1,10 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { fadeUp, staggerFadeUp } from '@/app/lib/animations';
+import { fadeUp } from '@/app/lib/animations';
 import { PortableText } from '@portabletext/react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import Image from 'next/image';
-import { urlFor } from '@/app/lib/sanity';
 import GraphSectionAnimated from './GraphSectionAnimated';
+import SkillsNodeGraph from './SkillsNodeGraph';
 import { aboutNTag } from '@/app/lib/interface';
 
 interface AboutAnimatedProps {
@@ -16,8 +14,9 @@ interface AboutAnimatedProps {
 export default function AboutAnimated({ data }: AboutAnimatedProps) {
   const titleRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const skillsRef = useRef<HTMLDivElement>(null);
+  const contentContainerRef = useRef<HTMLDivElement>(null);
   const graphRef = useRef<HTMLDivElement>(null);
+  const graphContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Animate section title with scroll trigger
@@ -59,24 +58,59 @@ export default function AboutAnimated({ data }: AboutAnimatedProps) {
       });
     }
 
-    // Animate skill tags with stagger
-    if (skillsRef.current) {
-      const tags = Array.from(skillsRef.current.querySelectorAll('[data-skill-tag]')).filter(
-        (el): el is HTMLElement => el instanceof HTMLElement
-      );
-      if (tags.length > 0) {
-        staggerFadeUp(tags, {
-          duration: 0.5,
-          stagger: 0.05,
-          distance: 20,
-          scrollTrigger: {
-            trigger: skillsRef.current,
-            start: 'top 80%',
-            toggleActions: 'play none none none',
-          },
+
+    // Match heights of About and Graph sections
+    const matchHeights = () => {
+      if (contentContainerRef.current && graphContainerRef.current) {
+        // Use requestAnimationFrame to ensure layout is complete
+        requestAnimationFrame(() => {
+          if (contentContainerRef.current && graphContainerRef.current) {
+            const graphHeight = graphContainerRef.current.offsetHeight;
+            const contentHeight = contentContainerRef.current.offsetHeight;
+            const maxHeight = Math.max(graphHeight, contentHeight);
+
+            // Set both to the maximum height only if there's a meaningful difference
+            if (maxHeight > 0) {
+              contentContainerRef.current.style.minHeight = `${maxHeight}px`;
+              graphContainerRef.current.style.minHeight = `${maxHeight}px`;
+            }
+          }
         });
       }
+    };
+
+    // Match heights after animations complete and on window resize
+    const timeoutIds: NodeJS.Timeout[] = [];
+    timeoutIds.push(setTimeout(matchHeights, 100));
+    timeoutIds.push(setTimeout(matchHeights, 500));
+    timeoutIds.push(setTimeout(matchHeights, 1000));
+
+    // Use ResizeObserver to keep heights matched dynamically
+    let resizeObserver: ResizeObserver | null = null;
+    if (typeof window !== 'undefined' && 'ResizeObserver' in window) {
+      resizeObserver = new ResizeObserver(() => {
+        matchHeights();
+      });
+
+      if (contentContainerRef.current) {
+        resizeObserver.observe(contentContainerRef.current);
+      }
+      if (graphContainerRef.current) {
+        resizeObserver.observe(graphContainerRef.current);
+      }
     }
+
+    // Also match on window resize
+    const handleResize = () => matchHeights();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      timeoutIds.forEach(id => clearTimeout(id));
+      if (resizeObserver) {
+        resizeObserver.disconnect();
+      }
+      window.removeEventListener('resize', handleResize);
+    };
   }, [data]);
 
   return (
@@ -97,50 +131,32 @@ export default function AboutAnimated({ data }: AboutAnimatedProps) {
             className="mb-2 basis-full p-3 sm:basis-full md:basis-full lg:basis-1/2"
             style={{ opacity: 0 }}
           >
-            <div className="relative h-fit rounded-lg bg-secondary p-6 font-normal shadow-sm">
-              <div className="prose prose-lg prose-blue max-w-none text-base dark:prose-invert prose-a:text-primary prose-li:marker:text-primary md:text-lg">
+            <div
+              ref={contentContainerRef}
+              className="relative rounded-lg bg-secondary p-6 font-normal shadow-sm"
+            >
+              <div className="prose prose-lg prose-blue max-w-none text-base dark:prose-invert prose-a:text-primary prose-li:marker:text-primary md:text-lg mb-6">
                 <PortableText value={data.about[0].content} />
               </div>
+              <GraphSectionAnimated />
             </div>
           </div>
 
-          {/* Links */}
+          {/* Skills Node Graph */}
           <div
             ref={graphRef}
             className="relative mb-2 mt-0 basis-full p-3 sm:basis-full md:basis-full lg:basis-1/2"
             style={{ opacity: 0 }}
           >
-            <div className="relative h-full basis-full rounded-lg bg-secondary p-6 shadow-sm">
-              <GraphSectionAnimated />
-
-              <div className="mt-4 text-lg font-medium sm:text-base">Skills</div>
-              <TooltipProvider>
-                <div ref={skillsRef} className="mt-2 flex flex-wrap">
-                  {data.tags.map((tag, idx) => (
-                    <Tooltip key={idx}>
-                      <TooltipTrigger>
-                        <div
-                          data-skill-tag
-                          className="m-1 flex items-center rounded-md border border-primary/40 px-2 py-0.5 text-xs leading-5 md:text-sm"
-                          style={{ opacity: 0 }}
-                        >
-                          {tag.tag_name}
-                        </div>
-                      </TooltipTrigger>
-                      <TooltipContent className="flex">
-                        <Image
-                          src={urlFor(tag.tag_url).url()}
-                          alt={tag.tag_name + ' image'}
-                          width={22}
-                          height={22}
-                          className="mr-2 rounded-md"
-                        />
-                        <span> x{tag.tag_count}</span>
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </div>
-              </TooltipProvider>
+            <div
+              ref={graphContainerRef}
+              className="relative basis-full rounded-lg bg-secondary p-6 shadow-sm flex flex-col"
+              style={{ height: '100%', minHeight: '600px', overflow: 'visible' }}
+            >
+              <div className="mb-4 text-lg font-medium sm:text-base flex-shrink-0">Skills</div>
+              <div className="flex-1 w-full" style={{ height: '100%', minHeight: '550px', overflow: 'visible' }}>
+                <SkillsNodeGraph data={data} />
+              </div>
             </div>
           </div>
         </div>

@@ -11,7 +11,7 @@ async function getData(){
         "tag_name": title,
         "tag_url": tagImg,
         "tag_count": count(*[_type == "project" && references(^._id)])
-        }[tag_count > 0] | order(tag_name asc) | order(tag_count desc)
+        } | order(tag_name asc) | order(tag_count desc)
     }
     `;
 

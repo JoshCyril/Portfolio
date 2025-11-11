@@ -59,13 +59,11 @@ export interface aboutNTag {
   about:[{
     content: any;
   }],
-  tags:[
-    {
-      tag_name: string,
-      tag_count: number,
-      tag_url: any;
-    }
-  ]
+  tags: Array<{
+    tag_name: string,
+    tag_count: number,
+    tag_url: any;
+  }>
 }
 
 export interface Ee3 {
