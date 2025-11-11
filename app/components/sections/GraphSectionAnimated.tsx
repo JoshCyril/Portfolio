@@ -20,36 +20,6 @@ const Radar = dynamic(() => import('react-chartjs-2').then((mod) => mod.Radar), 
   ssr: false,
 });
 
-const data = {
-  labels: ['Coding', 'Designing', 'Problem-solving', 'Communication', 'New skills'],
-  datasets: [
-    {
-      label: 'Last Month',
-      data: [80, 100, 80, 30, 70],
-      fill: true,
-      backgroundColor: 'rgba(152, 152, 152, 0.2)',
-      borderColor: 'rgb(152, 152, 152)',
-      pointBackgroundColor: 'rgb(152, 152, 152)',
-      pointBorderColor: '#eaeaea',
-      pointHoverBackgroundColor: '#eaeaea',
-      pointHoverBorderColor: 'rgb(152, 152, 152)',
-      borderWidth: 2,
-    },
-    {
-      label: 'This Month',
-      data: [90, 70, 80, 70, 100],
-      fill: true,
-      backgroundColor: 'rgba(54, 162, 235, 0.2)',
-      borderColor: 'rgb(54, 162, 235)',
-      pointBackgroundColor: 'rgb(54, 162, 235)',
-      pointBorderColor: '#eaeaea',
-      pointHoverBackgroundColor: '#eaeaea',
-      pointHoverBorderColor: 'rgb(54, 162, 235)',
-      borderWidth: 2,
-    },
-  ],
-};
-
 // Get site's font family from computed styles
 const getSiteFontFamily = () => {
   if (typeof window === 'undefined') return 'Inter, sans-serif';
@@ -63,7 +33,53 @@ const getThemeColor = (varName: string) => {
   if (typeof window === 'undefined') return '';
   const root = document.documentElement;
   const value = getComputedStyle(root).getPropertyValue(varName).trim();
-  return value ? `hsl(${value})` : '';
+  return value;
+};
+
+// Convert HSL string to RGB for Chart.js (which needs rgba)
+const hslToRgba = (hsl: string, alpha: number = 1): string => {
+  if (!hsl) return `rgba(128, 128, 128, ${alpha})`;
+
+  // Parse HSL string like "206 100% 49%" or "217.2 32.6% 17.5%"
+  const parts = hsl.trim().split(/\s+/);
+  if (parts.length < 3) return `rgba(128, 128, 128, ${alpha})`;
+
+  // Parse values, removing % signs if present
+  const h = parseFloat(parts[0]) / 360;
+  const s = parseFloat(parts[1].replace('%', '')) / 100;
+  const l = parseFloat(parts[2].replace('%', '')) / 100;
+
+  // Validate parsed values
+  if (isNaN(h) || isNaN(s) || isNaN(l)) {
+    return `rgba(128, 128, 128, ${alpha})`;
+  }
+
+  let r, g, b;
+
+  if (s === 0) {
+    r = g = b = l;
+  } else {
+    const hue2rgb = (p: number, q: number, t: number) => {
+      if (t < 0) t += 1;
+      if (t > 1) t -= 1;
+      if (t < 1/6) return p + (q - p) * 6 * t;
+      if (t < 1/2) return q;
+      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+      return p;
+    };
+
+    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+    const p = 2 * l - q;
+    r = hue2rgb(p, q, h + 1/3);
+    g = hue2rgb(p, q, h);
+    b = hue2rgb(p, q, h - 1/3);
+  }
+
+  r = Math.round(r * 255);
+  g = Math.round(g * 255);
+  b = Math.round(b * 255);
+
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
 export default function GraphSectionAnimated() {
@@ -75,6 +91,9 @@ export default function GraphSectionAnimated() {
     border: '',
     mutedForeground: '',
     foreground: '',
+    primary: '',
+    muted: '',
+    secondary: '',
     isDark: false,
   });
 
@@ -92,6 +111,9 @@ export default function GraphSectionAnimated() {
           border: getThemeColor('--border'),
           mutedForeground: getThemeColor('--muted-foreground'),
           foreground: getThemeColor('--foreground'),
+          primary: getThemeColor('--primary'),
+          muted: getThemeColor('--muted'),
+          secondary: getThemeColor('--secondary'),
           isDark,
         });
       };
@@ -109,8 +131,65 @@ export default function GraphSectionAnimated() {
     }
   }, []);
 
+  // Create chart data with theme-aware colors
+  const chartData = useMemo(() => {
+    // Get colors for the datasets
+    const primaryColor = themeColors.primary || '206 100% 49%';
+    // For "Last Month", use a more visible but subdued color
+    // In dark mode, use a lighter gray; in light mode, use muted-foreground
+    const lastMonthColor = themeColors.isDark
+      ? (themeColors.mutedForeground || '215 20.2% 65.1%') // Light gray for dark mode
+      : (themeColors.mutedForeground || '215.4 16.3% 46.9%'); // Muted-foreground for light mode
+    const foregroundColor = themeColors.foreground || (themeColors.isDark ? '210 40% 98%' : '222.2 84% 4.9%');
+    const borderColor = themeColors.border || (themeColors.isDark ? '217.2 32.6% 17.5%' : '214.3 31.8% 91.4%');
+
+    // Convert to rgba for Chart.js
+    const primaryRgba = hslToRgba(primaryColor, 1);
+    const primaryRgbaAlpha = hslToRgba(primaryColor, themeColors.isDark ? 0.3 : 0.2);
+    const lastMonthRgba = hslToRgba(lastMonthColor, 1);
+    const lastMonthRgbaAlpha = hslToRgba(lastMonthColor, themeColors.isDark ? 0.25 : 0.3);
+    const foregroundRgba = hslToRgba(foregroundColor, 1);
+    const borderRgba = hslToRgba(borderColor, 1);
+
+    return {
+      labels: ['Coding', 'Designing', 'Problem-solving', 'Communication', 'New skills'],
+      datasets: [
+        {
+          label: 'Last Month',
+          data: [80, 100, 80, 30, 70],
+          fill: true,
+          backgroundColor: lastMonthRgbaAlpha,
+          borderColor: lastMonthRgba,
+          pointBackgroundColor: lastMonthRgba,
+          pointBorderColor: borderRgba,
+          pointHoverBackgroundColor: foregroundRgba,
+          pointHoverBorderColor: lastMonthRgba,
+          borderWidth: 2,
+        },
+        {
+          label: 'This Month',
+          data: [90, 70, 80, 70, 100],
+          fill: true,
+          backgroundColor: primaryRgbaAlpha,
+          borderColor: primaryRgba,
+          pointBackgroundColor: primaryRgba,
+          pointBorderColor: borderRgba,
+          pointHoverBackgroundColor: foregroundRgba,
+          pointHoverBorderColor: primaryRgba,
+          borderWidth: 2,
+        },
+      ],
+    };
+  }, [themeColors]);
+
   // Create options with site's font family, theme colors, and relative font sizes
   const options = useMemo(() => {
+    const foregroundColor = themeColors.foreground || (themeColors.isDark ? '210 40% 98%' : '222.2 84% 4.9%');
+    const borderColor = themeColors.border || (themeColors.isDark ? '217.2 32.6% 17.5%' : '214.3 31.8% 91.4%');
+    const popoverColor = themeColors.popover || (themeColors.isDark ? '240 11% 20%' : '198 8% 87%');
+    const popoverForegroundColor = themeColors.popoverForeground || (themeColors.isDark ? '210 40% 98%' : '222.2 84% 4.9%');
+    const mutedForegroundColor = themeColors.mutedForeground || (themeColors.isDark ? '215 20.2% 65.1%' : '215.4 16.3% 46.9%');
+
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -121,7 +200,7 @@ export default function GraphSectionAnimated() {
           labels: {
             usePointStyle: true,
             padding: 15,
-            color: themeColors.foreground || (themeColors.isDark ? '#ffffff' : '#000000'),
+            color: hslToRgba(foregroundColor, 1),
             font: {
               family: fontFamily,
               size: 12, // 0.75rem relative to base font size
@@ -130,10 +209,10 @@ export default function GraphSectionAnimated() {
         },
         tooltip: {
           enabled: true,
-          backgroundColor: themeColors.popover || (themeColors.isDark ? 'rgba(30, 30, 30, 0.95)' : 'rgba(0, 0, 0, 0.8)'),
-          titleColor: themeColors.popoverForeground || (themeColors.isDark ? '#ffffff' : '#000000'),
-          bodyColor: themeColors.mutedForeground || (themeColors.isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)'),
-          borderColor: themeColors.border || (themeColors.isDark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)'),
+          backgroundColor: hslToRgba(popoverColor, 0.95),
+          titleColor: hslToRgba(popoverForegroundColor, 1),
+          bodyColor: hslToRgba(mutedForegroundColor, 1),
+          borderColor: hslToRgba(borderColor, 1),
           borderWidth: 1,
           padding: 12,
           titleFont: {
@@ -162,15 +241,13 @@ export default function GraphSectionAnimated() {
           },
           // Grid lines - theme-aware
           grid: {
-            color: themeColors.isDark
-              ? 'rgba(255, 255, 255, 0.1)'
-              : 'rgba(0, 0, 0, 0.1)',
+            color: hslToRgba(borderColor, 0.3),
             lineWidth: 1,
           },
           // Point labels (category labels) - theme-aware
           pointLabels: {
             display: true, // Keep category labels (Coding, Designing, etc.)
-            color: themeColors.foreground || (themeColors.isDark ? '#ffffff' : '#000000'),
+            color: hslToRgba(foregroundColor, 1),
             font: {
               family: fontFamily,
               size: 12, // 0.75rem relative to base font size
@@ -199,9 +276,9 @@ export default function GraphSectionAnimated() {
   return (
     <div ref={graphRef} className="mb-2 basis-full flex-col" style={{ opacity: 0 }}>
       <Radar
-        data={data}
+        data={chartData}
         options={options}
-        className="h-80 max-h-80 w-full max-w-full invert filter-none dark:hue-rotate-180"
+        className="h-80 max-h-80 w-full max-w-full"
       />
     </div>
   );

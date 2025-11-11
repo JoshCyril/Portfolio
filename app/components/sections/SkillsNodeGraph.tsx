@@ -277,6 +277,9 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
     tooltipGroup.setAttribute('class', 'tooltip-group');
     tooltipGroup.setAttribute('opacity', '0');
     tooltipGroup.setAttribute('pointer-events', 'none');
+    // Add smooth transitions for opacity - SVG elements support CSS transitions on opacity
+    tooltipGroup.style.transition = 'opacity 0.15s ease-out';
+    tooltipGroup.style.willChange = 'opacity, transform';
     tooltipGroupRef.current = tooltipGroup;
 
     const tooltipBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -385,8 +388,8 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
 
       nodeElementsRef.current.set(node.id, { group, image: img, text, foreignObject });
 
-      // Hover handlers - show tooltip with name and project count
-      // Use refs directly instead of state to avoid re-rendering
+      // Hover handlers - update node visuals and set hover state
+      // Tooltip display and positioning is handled by the useEffect
       const showTooltip = () => {
         setHoveredNodeId(node.id);
 
@@ -407,25 +410,18 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
           group.parentNode.appendChild(group);
         }
 
-        // Update tooltip content using refs
-        if (tooltipTitleRef.current && tooltipCountRef.current && tooltipBgRef.current && tooltipGroupRef.current) {
-          // Bring tooltip to front (move to end of SVG for highest z-index)
-          if (tooltipGroupRef.current.parentNode) {
-            tooltipGroupRef.current.parentNode.appendChild(tooltipGroupRef.current);
-          }
-
+        // Update tooltip content using refs - this happens immediately for instant text update
+        if (tooltipTitleRef.current && tooltipCountRef.current && tooltipBgRef.current) {
           tooltipTitleRef.current.textContent = node.tag_name;
           // Show project count in tooltip only if count > 0
           const showCount = node.tag_count > 0;
           if (showCount) {
             tooltipCountRef.current.textContent = `${node.tag_count} ${node.tag_count === 1 ? 'project' : 'projects'}`;
-            tooltipCountRef.current.setAttribute('opacity', '1');
           } else {
             tooltipCountRef.current.textContent = '';
-            tooltipCountRef.current.setAttribute('opacity', '0');
           }
 
-          // Calculate tooltip dimensions (use temporary positioning)
+          // Calculate tooltip dimensions for initial sizing
           tooltipTitleRef.current.setAttribute('x', '0');
           tooltipTitleRef.current.setAttribute('y', '0');
           tooltipCountRef.current.setAttribute('x', '0');
@@ -437,76 +433,9 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
           const tooltipWidth = Math.max(titleBbox.width, countBbox.width) + 24; // Padding
           const tooltipHeight = showCount ? 44 : 32; // Height for title only or title + count
 
-          // Calculate safe zone - ensure tooltip doesn't get cut off
-          const safeZone = 80; // Safe zone for tooltip at edges
-
-          // Update tooltip colors to match current theme
-          const updateTooltipColors = () => {
-            if (typeof window === 'undefined') return;
-            const root = document.documentElement;
-            const popoverBg = `hsl(${getComputedStyle(root).getPropertyValue('--popover').trim()})`;
-            const popoverFg = `hsl(${getComputedStyle(root).getPropertyValue('--popover-foreground').trim()})`;
-            const mutedFg = `hsl(${getComputedStyle(root).getPropertyValue('--muted-foreground').trim()})`;
-            const borderColor = `hsl(${getComputedStyle(root).getPropertyValue('--border').trim()})`;
-
-            if (tooltipBgRef.current) {
-              tooltipBgRef.current.setAttribute('fill', popoverBg);
-              tooltipBgRef.current.setAttribute('stroke', borderColor);
-            }
-            if (tooltipTitleRef.current) {
-              tooltipTitleRef.current.setAttribute('fill', popoverFg);
-            }
-            if (tooltipCountRef.current) {
-              tooltipCountRef.current.setAttribute('fill', mutedFg);
-            }
-          };
-          updateTooltipColors();
-
-          // Position tooltip above node, but adjust if near edges
-          let tooltipX = 0;
-          let tooltipY = -tooltipHeight - node.radius - 12;
-
-          // Check if tooltip would go outside bounds and adjust
-          const nodeX = node.x;
-          const nodeY = node.y;
-
-          // Adjust horizontal position if near left/right edges - use containerWidth
-          if (nodeX - tooltipWidth / 2 < safeZone) {
-            tooltipX = safeZone - nodeX + tooltipWidth / 2;
-          } else if (nodeX + tooltipWidth / 2 > containerWidth - safeZone) {
-            tooltipX = (containerWidth - safeZone) - nodeX - tooltipWidth / 2;
-          }
-
-          // Adjust vertical position if near top/bottom edges - use containerHeight
-          if (nodeY + tooltipY < safeZone) {
-            // Move tooltip below node if too close to top
-            tooltipY = node.radius + 12;
-          } else if (nodeY + tooltipY + tooltipHeight > containerHeight - safeZone) {
-            // Move tooltip above if too close to bottom
-            tooltipY = -tooltipHeight - node.radius - 12;
-          }
-
-          // Position tooltip with safe zone consideration
-          tooltipBgRef.current.setAttribute('x', (-tooltipWidth / 2 + tooltipX).toString());
-          tooltipBgRef.current.setAttribute('y', tooltipY.toString());
+          // Set initial tooltip size
           tooltipBgRef.current.setAttribute('width', tooltipWidth.toString());
           tooltipBgRef.current.setAttribute('height', tooltipHeight.toString());
-
-          // Position title and count in tooltip
-          if (showCount) {
-            tooltipTitleRef.current.setAttribute('x', tooltipX.toString());
-            tooltipTitleRef.current.setAttribute('y', (tooltipY + 18).toString());
-            tooltipCountRef.current.setAttribute('x', tooltipX.toString());
-            tooltipCountRef.current.setAttribute('y', (tooltipY + 32).toString());
-            tooltipCountRef.current.setAttribute('opacity', '1');
-          } else {
-            // Center title vertically when no count
-            tooltipTitleRef.current.setAttribute('x', tooltipX.toString());
-            tooltipTitleRef.current.setAttribute('y', (tooltipY + tooltipHeight / 2 + 6).toString());
-            tooltipCountRef.current.setAttribute('opacity', '0');
-          }
-
-          tooltipGroupRef.current.setAttribute('opacity', '1');
         }
       };
 
@@ -524,10 +453,6 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
             elements.image.style.opacity = '0.5';
           }
         });
-
-        if (tooltipGroupRef.current) {
-          tooltipGroupRef.current.setAttribute('opacity', '0');
-        }
       };
 
       group.addEventListener('mouseenter', showTooltip);
@@ -638,8 +563,9 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
   // Update tooltip position when hovering - separate effect to avoid graph re-render
   useEffect(() => {
     if (!hoveredNodeId || !tooltipGroupRef.current || !tooltipBgRef.current || !tooltipTitleRef.current || !tooltipCountRef.current) {
-      // Hide tooltip if no node is hovered
+      // Hide tooltip if no node is hovered with smooth fade-out
       if (tooltipGroupRef.current) {
+        tooltipGroupRef.current.style.opacity = '0';
         tooltipGroupRef.current.setAttribute('opacity', '0');
       }
       return;
@@ -647,6 +573,11 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
 
     let animationFrameId: number;
     let isActive = true;
+    let lastX = 0;
+    let lastY = 0;
+    // Smooth interpolation for position updates - creates fluid following effect
+    const smoothingFactor = 0.2; // Lower = smoother but slower, higher = more responsive
+
     // Get actual container dimensions for tooltip positioning
     const containerRect = containerRef.current?.getBoundingClientRect();
     const width = containerRect?.width || dimensions.width;
@@ -668,6 +599,27 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
           tooltipGroupRef.current.parentNode.appendChild(tooltipGroupRef.current);
         }
 
+        // Update tooltip content
+        tooltipTitleRef.current.textContent = node.tag_name;
+        const showCount = node.tag_count > 0;
+        if (showCount) {
+          tooltipCountRef.current.textContent = `${node.tag_count} ${node.tag_count === 1 ? 'project' : 'projects'}`;
+        } else {
+          tooltipCountRef.current.textContent = '';
+        }
+
+        // Recalculate tooltip dimensions
+        tooltipTitleRef.current.setAttribute('x', '0');
+        tooltipTitleRef.current.setAttribute('y', '0');
+        tooltipCountRef.current.setAttribute('x', '0');
+        tooltipCountRef.current.setAttribute('y', '18');
+        const titleBbox = tooltipTitleRef.current.getBBox();
+        const countBbox = showCount ? tooltipCountRef.current.getBBox() : { width: 0 };
+        const tooltipWidth = Math.max(titleBbox.width, countBbox.width) + 24;
+        const tooltipHeight = showCount ? 44 : 32;
+        tooltipBgRef.current.setAttribute('width', tooltipWidth.toString());
+        tooltipBgRef.current.setAttribute('height', tooltipHeight.toString());
+
         // Update tooltip colors to match current theme on every update
         if (typeof window !== 'undefined') {
           const root = document.documentElement;
@@ -682,34 +634,35 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
           tooltipCountRef.current.setAttribute('fill', mutedFg);
         }
 
+        // Smooth position interpolation for fluid movement
+        lastX = lastX + (node.x - lastX) * smoothingFactor;
+        lastY = lastY + (node.y - lastY) * smoothingFactor;
+
         // Recalculate tooltip position with safe zone on every update
-        const tooltipWidth = parseFloat(tooltipBgRef.current.getAttribute('width') || '100');
-        const tooltipHeight = parseFloat(tooltipBgRef.current.getAttribute('height') || '44');
         const safeZone = 80;
-        const showCount = node.tag_count > 0;
 
         // Position tooltip above node, but adjust if near edges
         let tooltipX = 0;
         let tooltipY = -tooltipHeight - node.radius - 12;
 
-        // Adjust horizontal position if near left/right edges
-        if (node.x - tooltipWidth / 2 < safeZone) {
-          tooltipX = safeZone - node.x + tooltipWidth / 2;
-        } else if (node.x + tooltipWidth / 2 > width - safeZone) {
-          tooltipX = (width - safeZone) - node.x - tooltipWidth / 2;
+        // Adjust horizontal position if near left/right edges (use smoothed position)
+        if (lastX - tooltipWidth / 2 < safeZone) {
+          tooltipX = safeZone - lastX + tooltipWidth / 2;
+        } else if (lastX + tooltipWidth / 2 > width - safeZone) {
+          tooltipX = (width - safeZone) - lastX - tooltipWidth / 2;
         }
 
-        // Adjust vertical position if near top/bottom edges
-        if (node.y + tooltipY < safeZone) {
+        // Adjust vertical position if near top/bottom edges (use smoothed position)
+        if (lastY + tooltipY < safeZone) {
           // Move tooltip below node if too close to top
           tooltipY = node.radius + 12;
-        } else if (node.y + tooltipY + tooltipHeight > height - safeZone) {
+        } else if (lastY + tooltipY + tooltipHeight > height - safeZone) {
           // Move tooltip above if too close to bottom (default position)
           tooltipY = -tooltipHeight - node.radius - 12;
         }
 
-        // Update tooltip group transform (centered on node)
-        tooltipGroupRef.current.setAttribute('transform', `translate(${node.x},${node.y})`);
+        // Update tooltip group transform with smoothed position (centered on node)
+        tooltipGroupRef.current.setAttribute('transform', `translate(${lastX},${lastY})`);
 
         // Update tooltip element positions relative to group (with safe zone adjustments)
         tooltipBgRef.current.setAttribute('x', (-tooltipWidth / 2 + tooltipX).toString());
@@ -727,6 +680,12 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
           tooltipTitleRef.current.setAttribute('y', (tooltipY + tooltipHeight / 2 + 6).toString());
           tooltipCountRef.current.setAttribute('opacity', '0');
         }
+
+        // Ensure tooltip is visible - opacity transition is handled by CSS
+        if (tooltipGroupRef.current.getAttribute('opacity') !== '1') {
+          tooltipGroupRef.current.style.opacity = '1';
+          tooltipGroupRef.current.setAttribute('opacity', '1');
+        }
       }
 
       // Continue updating while hovering
@@ -734,6 +693,13 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
         animationFrameId = requestAnimationFrame(updateTooltipPosition);
       }
     };
+
+    // Initialize smoothed position to node position immediately
+    const node = nodesRef.current.find(n => n.id === hoveredNodeId);
+    if (node) {
+      lastX = node.x;
+      lastY = node.y;
+    }
 
     // Start updating
     animationFrameId = requestAnimationFrame(updateTooltipPosition);
