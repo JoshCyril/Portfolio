@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { prefersReducedMotion } from './animations';
@@ -21,16 +21,12 @@ const AnimationContext = createContext<AnimationContextType | undefined>(
 );
 
 export function AnimationProvider({ children }: { children: ReactNode }) {
-  const contextValue = useRef<AnimationContextType>({
-    gsap,
-    ScrollTrigger,
-    prefersReducedMotion: false,
-  });
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
     // Update reduced motion preference
     const updateReducedMotion = () => {
-      contextValue.current.prefersReducedMotion = prefersReducedMotion();
+      setReducedMotion(prefersReducedMotion());
     };
 
     updateReducedMotion();
@@ -53,8 +49,14 @@ export function AnimationProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const contextValue: AnimationContextType = {
+    gsap,
+    ScrollTrigger,
+    prefersReducedMotion: reducedMotion,
+  };
+
   return (
-    <AnimationContext.Provider value={contextValue.current}>
+    <AnimationContext.Provider value={contextValue}>
       {children}
     </AnimationContext.Provider>
   );

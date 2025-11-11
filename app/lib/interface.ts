@@ -8,11 +8,19 @@ export interface simpleProject {
   slug: string;
   description: string;
   proDate: string,
-    tags: [{
+    tags: Array<{
       title: string,
       tagImg: any
-    }],
+    }>,
     tagCount: number;
+    featured?: boolean;
+}
+
+export interface ProjectFilters {
+  selectedTags: string[];
+  searchQuery: string;
+  sortBy: 'date-desc' | 'date-asc' | 'title-asc' | 'title-desc' | 'featured-first';
+  featuredOnly: boolean;
 }
 
 export interface fullProject {

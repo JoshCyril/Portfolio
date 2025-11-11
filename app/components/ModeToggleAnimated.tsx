@@ -19,6 +19,7 @@ export function ModeToggleAnimated() {
   const rippleContainerRef = React.useRef<HTMLDivElement | null>(null);
   const previousThemeRef = React.useRef<string | undefined>(theme);
   const previousResolvedThemeRef = React.useRef<string | undefined>(resolvedTheme);
+  const [open, setOpen] = React.useState(false);
 
   // Create full-page ripple effect on theme change
   const createThemeRipple = React.useCallback((buttonElement: HTMLElement, newTheme: string) => {
@@ -168,26 +169,36 @@ export function ModeToggleAnimated() {
   };
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="outline"
           size="icon"
           ref={buttonRef}
+          className="h-11 w-11 md:h-10 md:w-10 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
         >
           <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
           <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => handleThemeChange('light')}>
+      <DropdownMenuContent align="end" className="min-w-[200px] md:min-w-[8rem]">
+        <DropdownMenuItem onClick={() => {
+          handleThemeChange('light');
+          setOpen(false);
+        }} className="px-3 py-3 md:px-2 md:py-1.5 text-base md:text-sm min-h-[44px] md:min-h-0">
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange('dark')}>
+        <DropdownMenuItem onClick={() => {
+          handleThemeChange('dark');
+          setOpen(false);
+        }} className="px-3 py-3 md:px-2 md:py-1.5 text-base md:text-sm min-h-[44px] md:min-h-0">
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleThemeChange('system')}>
+        <DropdownMenuItem onClick={() => {
+          handleThemeChange('system');
+          setOpen(false);
+        }} className="px-3 py-3 md:px-2 md:py-1.5 text-base md:text-sm min-h-[44px] md:min-h-0">
           System
         </DropdownMenuItem>
       </DropdownMenuContent>

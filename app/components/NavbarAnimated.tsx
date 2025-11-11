@@ -76,10 +76,11 @@ export default function NavbarAnimated() {
         className="fixed bottom-8 top-auto z-40 h-fit w-fit rounded-lg border border-border shadow-lg md:bottom-auto md:top-8"
         style={{ opacity: 0 }}
       >
-        <div className="flex items-center justify-around gap-4 rounded-lg bg-secondary/80 p-2 text-xl backdrop-blur-sm">
+        <div className="flex items-center justify-around gap-3 md:gap-4 rounded-lg bg-secondary/80 p-3 md:p-2 text-xl backdrop-blur-sm">
           <Button
             variant="ghosth"
             size="icon"
+            className="h-11 w-11 md:h-10 md:w-10 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0"
             onClick={(e) => {
               if (pathname === '/') {
                 e.preventDefault();
@@ -98,12 +99,12 @@ export default function NavbarAnimated() {
               />
             </Link>
           </Button>
-          <Button asChild variant="outline" size="icon">
+          <Button asChild variant="outline" size="icon" className="h-11 w-11 md:h-10 md:w-10 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0">
             <Link href={'/projects'}>
               <Briefcase className="h-[1.2rem] w-[1.2rem] text-accent-foreground" />
             </Link>
           </Button>
-          <Button asChild variant="outline" size="icon">
+          <Button asChild variant="outline" size="icon" className="h-11 w-11 md:h-10 md:w-10 min-h-[44px] min-w-[44px] md:min-h-0 md:min-w-0">
             <Link href={'/cv'}>
               <Paperclip className="h-[1.2rem] w-[1.2rem] text-accent-foreground" />
             </Link>

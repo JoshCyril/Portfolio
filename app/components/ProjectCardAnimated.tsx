@@ -120,7 +120,7 @@ export default function ProjectCardAnimated({ isDimmed = false, onMouseEnter, on
           {/* Stacks */}
           <div className="relative z-30 h-fit">
             <div className="align-center absolute -top-5 flex h-fit w-fit items-center justify-center gap-2 rounded-lg bg-secondary p-2 text-3xl">
-              {project.tags.map((tag, idx) => (
+              {project.tags.slice(0, 3).map((tag, idx) => (
                 <Tooltip key={idx}>
                   <TooltipTrigger>
                     <Image
@@ -136,9 +136,11 @@ export default function ProjectCardAnimated({ isDimmed = false, onMouseEnter, on
                   </TooltipContent>
                 </Tooltip>
               ))}
-              <div className="grid h-[24px] w-[24px] rounded-md bg-muted text-xs font-semibold text-muted-foreground">
-                <p className="place-self-center text-xs">+{project.tagCount}</p>
-              </div>
+              {project.tags.length > 3 && (
+                <div className="grid h-[24px] w-[24px] rounded-md bg-muted text-xs font-semibold text-muted-foreground">
+                  <p className="place-self-center text-xs">+{project.tags.length - 3}</p>
+                </div>
+              )}
             </div>
           </div>
 
