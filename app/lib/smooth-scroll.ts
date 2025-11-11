@@ -1,8 +1,11 @@
 import { gsap } from 'gsap';
 import { prefersReducedMotion } from './animations';
 
+// Store active scroll animation ID for cancellation
+let activeScrollAnimation: number | null = null;
+
 /**
- * Smooth scroll to a target element or position using GSAP
+ * Smooth scroll to a target element or position with enhanced easing
  */
 export const smoothScrollTo = (
   target: string | HTMLElement | number,
@@ -11,7 +14,7 @@ export const smoothScrollTo = (
     duration?: number;
   } = {}
 ) => {
-  const { offset = 80, duration = 1 } = options;
+  const { offset = 80, duration = 1.2 } = options;
   let targetY: number;
 
   if (typeof target === 'string') {
@@ -32,30 +35,38 @@ export const smoothScrollTo = (
     return;
   }
 
-  // Use native smooth scroll with GSAP animation object for better performance
+  // Cancel any existing scroll animation
+  if (activeScrollAnimation !== null) {
+    cancelAnimationFrame(activeScrollAnimation);
+    activeScrollAnimation = null;
+  }
+
+  // Use requestAnimationFrame for smoother scrolling with power3 ease-in-out
   const startY = window.scrollY;
   const distance = targetY - startY;
-  let startTime: number | null = null;
+  const startTime = performance.now();
 
-  const animate = (currentTime: number) => {
-    if (startTime === null) startTime = currentTime;
+  const animateScroll = (currentTime: number) => {
     const elapsed = (currentTime - startTime) / 1000;
     const progress = Math.min(elapsed / duration, 1);
 
-    // Easing function (ease-in-out cubic)
-    const easeProgress = progress < 0.5
+    // Power3 ease-in-out function for smooth acceleration and deceleration
+    // This creates a smooth S-curve: slow start, fast middle, slow end
+    const easeInOut = progress < 0.5
       ? 4 * progress * progress * progress
       : 1 - Math.pow(-2 * progress + 2, 3) / 2;
 
-    const currentY = startY + distance * easeProgress;
+    const currentY = startY + distance * easeInOut;
     window.scrollTo(0, currentY);
 
     if (progress < 1) {
-      requestAnimationFrame(animate);
+      activeScrollAnimation = requestAnimationFrame(animateScroll);
+    } else {
+      activeScrollAnimation = null;
     }
   };
 
-  requestAnimationFrame(animate);
+  activeScrollAnimation = requestAnimationFrame(animateScroll);
 };
 
 /**

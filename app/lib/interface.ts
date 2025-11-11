@@ -52,7 +52,7 @@ export interface cvPDF{
 
 export interface footerData{
   copyright: string;
-  udDate: Date;
+  udDate: Date | string; // Can be Date object or ISO string from Sanity
 }
 
 export interface aboutNTag {

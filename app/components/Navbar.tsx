@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ModeToggle } from "./ModeToggle";
+import { ModeToggleAnimated } from "./ModeToggleAnimated";
 import { Button } from "@/components/ui/button"
 import { Briefcase, Paperclip } from "lucide-react";
 import { cvPDF } from "@/app/lib/interface";
@@ -32,7 +32,7 @@ export default function Navbar(){
                     <Button asChild variant="outline" size="icon">
                         <Link href={"/cv"}><Paperclip className="h-[1.2rem] w-[1.2rem] text-accent-foreground"/></Link>
                     </Button>
-                    <ModeToggle/>
+                    <ModeToggleAnimated />
                 </div>
             </div>
         </div>

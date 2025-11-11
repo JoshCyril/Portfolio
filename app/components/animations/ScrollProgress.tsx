@@ -51,6 +51,7 @@ export default function ScrollProgress() {
 
   return (
     <div
+      data-scroll-progress
       className="fixed left-0 top-0 z-50 h-1 bg-primary transition-all duration-150 ease-out"
       style={{ width: `${progress}%` }}
       aria-hidden="true"

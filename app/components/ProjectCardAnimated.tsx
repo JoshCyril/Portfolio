@@ -33,7 +33,7 @@ export default function ProjectCardAnimated(project: simpleProject) {
 
       gsap.to(image, {
         // scale: 1.05,
-        y: -20,
+        y: -28,
         duration: 0.4,
         ease: 'power2.out',
       });
