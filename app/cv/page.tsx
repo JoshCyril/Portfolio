@@ -18,7 +18,7 @@ async function getData(){
 export default async function Home() {
   const data:cvPDF = await getData();
   return (
-    <PageContentFadeIn className="mb-10 grid h-fit place-items-center py-6 md:mt-24" delay={0.15}>
+    <div className="mb-10 grid h-fit place-items-center py-6 md:mt-24">
         <div className="z-10 w-11/12 max-w-screen-2xl">
 
             <div className="relative col-span-4 mb-4 ml-3 flex w-full basis-full items-center py-2">
@@ -34,6 +34,6 @@ export default async function Home() {
               </div>
             </div>
         </div>
-    </PageContentFadeIn>
+    </div>
   );
 }

@@ -25,6 +25,32 @@ export default function PageTransition({ children }: PageTransitionProps) {
     childrenRef.current = children;
   }, [children]);
 
+  // Safety effect: ensure pointer events are always enabled when not transitioning
+  useEffect(() => {
+    const checkAndFixPointerEvents = () => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      // If not transitioning, ensure pointer events are enabled
+      if (!isTransitioningRef.current) {
+        container.style.pointerEvents = 'auto';
+        // Enable all interactive elements
+        const interactiveElements = container.querySelectorAll('a, button, [role="button"], [tabindex], input, select, textarea');
+        interactiveElements.forEach((elem) => {
+          (elem as HTMLElement).style.pointerEvents = 'auto';
+        });
+      }
+    };
+
+    // Check immediately
+    checkAndFixPointerEvents();
+
+    // Also check periodically to catch any cases where pointer events get stuck
+    const interval = setInterval(checkAndFixPointerEvents, 100);
+
+    return () => clearInterval(interval);
+  });
+
   // Update displayed children when pathname changes
   useEffect(() => {
     const pathnameChanged = prevPathnameRef.current !== pathname;
@@ -34,6 +60,7 @@ export default function PageTransition({ children }: PageTransitionProps) {
       isInitialMount.current = false;
       prevPathnameRef.current = pathname;
       transitioningToPathnameRef.current = null;
+      isTransitioningRef.current = false;
       setDisplayChildren(childrenRef.current);
       // Ensure container is immediately interactive
       const container = containerRef.current;
@@ -42,6 +69,11 @@ export default function PageTransition({ children }: PageTransitionProps) {
         gsap.set(container, {
           opacity: 1,
           pointerEvents: 'auto'
+        });
+        // Enable all interactive elements
+        const interactiveElements = container.querySelectorAll('a, button, [role="button"], [tabindex], input, select, textarea');
+        interactiveElements.forEach((elem) => {
+          (elem as HTMLElement).style.pointerEvents = 'auto';
         });
       }
       return;
@@ -84,6 +116,8 @@ export default function PageTransition({ children }: PageTransitionProps) {
         timelineRef.current.kill();
         timelineRef.current = null;
       }
+      // Reset transitioning state and restore pointer events
+      isTransitioningRef.current = false;
       // Reset container state if we killed a transition
       gsap.set(container, {
         opacity: 1,
@@ -93,6 +127,11 @@ export default function PageTransition({ children }: PageTransitionProps) {
       });
       container.style.pointerEvents = 'auto';
       container.style.opacity = '1';
+      // Enable all interactive elements
+      const interactiveElements = container.querySelectorAll('a, button, [role="button"], [tabindex], input, select, textarea');
+      interactiveElements.forEach((elem) => {
+        (elem as HTMLElement).style.pointerEvents = 'auto';
+      });
       // Fall through to start new transition
     }
 
@@ -142,10 +181,14 @@ export default function PageTransition({ children }: PageTransitionProps) {
       onComplete: () => {
         // Only update if we're still transitioning to the same pathname
         if (transitioningToPathnameRef.current === targetPathname) {
-          // Only disable pointer events briefly when content is being swapped
-          container.style.pointerEvents = 'none';
+          // Keep pointer events enabled - opacity handles the visual transition
           // Update children while invisible - use the latest children from ref
           setDisplayChildren(childrenRef.current);
+          // Ensure pointer events stay enabled
+          container.style.pointerEvents = 'auto';
+        } else {
+          // Pathname changed - restore pointer events immediately
+          container.style.pointerEvents = 'auto';
         }
       },
     })
@@ -155,14 +198,19 @@ export default function PageTransition({ children }: PageTransitionProps) {
       .call(() => {
         // Only continue if we're still transitioning to the same pathname
         if (transitioningToPathnameRef.current === targetPathname) {
-          gsap.set(container, { y: 10, opacity: 0 });
+          gsap.set(container, { y: 10, opacity: 0, visibility: 'visible' });
           // Re-enable pointer events immediately for new content
           container.style.pointerEvents = 'auto';
+          container.style.visibility = 'visible';
           // Also ensure all interactive children are enabled
-          const interactiveElements = container.querySelectorAll('a, button, [role="button"], [tabindex]');
+          const interactiveElements = container.querySelectorAll('a, button, [role="button"], [tabindex], input, select, textarea');
           interactiveElements.forEach((elem) => {
             (elem as HTMLElement).style.pointerEvents = 'auto';
           });
+        } else {
+          // Pathname changed - restore pointer events
+          container.style.pointerEvents = 'auto';
+          container.style.visibility = 'visible';
         }
       })
       // Fade in new content - interactions already enabled
@@ -181,23 +229,39 @@ export default function PageTransition({ children }: PageTransitionProps) {
           // Final check - ensure everything is interactive
           if (transitioningToPathnameRef.current === targetPathname) {
             container.style.pointerEvents = 'auto';
-            const interactiveElements = container.querySelectorAll('a, button, [role="button"], [tabindex]');
+            const interactiveElements = container.querySelectorAll('a, button, [role="button"], [tabindex], input, select, textarea');
             interactiveElements.forEach((elem) => {
               (elem as HTMLElement).style.pointerEvents = 'auto';
             });
+          } else {
+            // Pathname changed - restore pointer events
+            container.style.pointerEvents = 'auto';
           }
         },
       });
 
     timelineRef.current = tl;
 
+    // Capture container for cleanup
+    const cleanupContainer = container;
+
     return () => {
       // Cleanup: kill timeline if effect is cleaning up
-      // But don't reset isTransitioningRef here - let onComplete handle it
-      // This prevents race conditions
       if (timelineRef.current) {
         timelineRef.current.kill();
         timelineRef.current = null;
+      }
+      // CRITICAL: Always restore pointer events when cleaning up
+      // This ensures interactions work even if transition is interrupted
+      if (cleanupContainer) {
+        isTransitioningRef.current = false;
+        cleanupContainer.style.pointerEvents = 'auto';
+        gsap.set(cleanupContainer, { pointerEvents: 'auto', clearProps: 'pointerEvents' });
+        // Enable all interactive elements
+        const interactiveElements = cleanupContainer.querySelectorAll('a, button, [role="button"], [tabindex], input, select, textarea');
+        interactiveElements.forEach((elem) => {
+          (elem as HTMLElement).style.pointerEvents = 'auto';
+        });
       }
     };
   }, [pathname]); // Only depend on pathname, not children
@@ -206,7 +270,10 @@ export default function PageTransition({ children }: PageTransitionProps) {
     <div
       ref={containerRef}
       className="min-h-screen"
-      style={{ pointerEvents: 'auto' }}
+      style={{
+        pointerEvents: 'auto',
+        visibility: 'visible'
+      }}
     >
       {displayChildren}
     </div>
