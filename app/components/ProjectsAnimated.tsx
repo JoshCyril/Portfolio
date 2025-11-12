@@ -92,7 +92,7 @@ export default function ProjectsAnimated({ projects }: ProjectsAnimatedProps) {
 
                 <div ref={titleRef} className="relative col-span-4 mb-4 ml-3 flex w-full basis-full items-center py-2" style={{ opacity: 0 }}>
                     <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
-                    <span className="flex text-2xl font-bold md:text-3xl">Check out my <Link href="/projects" className="ml-2 hover:underline">Projects</Link></span>
+                    <span className="flex text-2xl font-bold md:text-3xl">Check out my <Link href="/projects" className="ml-2 hover:underline">projects</Link></span>
                 </div>
 
                 <div className="flex flex-wrap py-3" ref={cardsContainerRef} >

@@ -20,7 +20,7 @@ export default function ProjectsPageAnimated({ initialProjects, totalCount, tags
     if (titleRef.current) {
       fadeIn(titleRef.current, {
         duration: 0.6,
-        delay: 0.1,
+        delay: 0.5,
         y: 20,
       });
     }
@@ -29,7 +29,7 @@ export default function ProjectsPageAnimated({ initialProjects, totalCount, tags
     if (contentRef.current) {
       fadeIn(contentRef.current, {
         duration: 0.6,
-        delay: 0.2,
+        delay: 1,
         y: 30,
       });
     }
@@ -40,7 +40,7 @@ export default function ProjectsPageAnimated({ initialProjects, totalCount, tags
       <div className="z-10 w-11/12 max-w-screen-2xl">
         <div className="relative col-span-4 mb-4 ml-3 flex w-full basis-full items-center py-2">
           <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
-          <span ref={titleRef} className="flex text-2xl font-bold md:text-3xl">Check out my Projects</span>
+          <span ref={titleRef} className="flex text-2xl font-bold md:text-3xl">Check out my projects</span>
         </div>
 
         <div ref={contentRef}>

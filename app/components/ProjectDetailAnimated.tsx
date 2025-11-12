@@ -40,7 +40,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
     if (titleRef.current) {
       fadeIn(titleRef.current, {
         duration: 0.6,
-        delay: 0.1,
+        delay: 0.5,
         y: 20,
       });
     }
@@ -49,7 +49,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
     if (imageSectionRef.current) {
       fadeIn(imageSectionRef.current, {
         duration: 0.6,
-        delay: 0.2,
+        delay: 0.8,
         y: 30,
       });
     }
@@ -58,7 +58,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
     if (overviewSectionRef.current) {
       fadeIn(overviewSectionRef.current, {
         duration: 0.6,
-        delay: 0.3,
+        delay: 1,
         y: 30,
       });
     }
@@ -70,7 +70,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
       );
       if (tagElements.length > 0) {
         staggerFadeUp(tagElements, {
-          delay: 0.4,
+          delay: 0.8,
           duration: 0.5,
           stagger: 0.1,
           distance: 20,
@@ -82,7 +82,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
     if (caseStudyRef.current) {
       fadeIn(caseStudyRef.current, {
         duration: 0.6,
-        delay: 0.5,
+        delay: 1.2,
         y: 20,
       });
     }
@@ -91,7 +91,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
     if (caseStudyContentRef.current) {
       fadeIn(caseStudyContentRef.current, {
         duration: 0.6,
-        delay: 0.6,
+        delay: 1.4,
         y: 30,
       });
     }
@@ -100,7 +100,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
     if (screenshotsRef.current) {
       fadeIn(screenshotsRef.current, {
         duration: 0.6,
-        delay: 0.7,
+        delay: 1.6,
         y: 20,
       });
     }
@@ -109,7 +109,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
     if (linksSectionRef.current) {
       fadeIn(linksSectionRef.current, {
         duration: 0.6,
-        delay: 0.8,
+        delay: 1.8,
         y: 20,
       });
     }
@@ -121,7 +121,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
       );
       if (rows.length > 0) {
         staggerFadeUp(rows, {
-          delay: 0.9,
+          delay: 2,
           duration: 0.5,
           stagger: 0.1,
           distance: 20,

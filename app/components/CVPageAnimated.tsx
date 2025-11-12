@@ -16,7 +16,7 @@ export default function CVPageAnimated({ fileURL }: CVPageAnimatedProps) {
     if (titleRef.current) {
       fadeIn(titleRef.current, {
         duration: 0.6,
-        delay: 0.1,
+        delay: 0.5,
         y: 20,
       });
     }
@@ -25,7 +25,7 @@ export default function CVPageAnimated({ fileURL }: CVPageAnimatedProps) {
     if (embedContainerRef.current) {
       fadeIn(embedContainerRef.current, {
         duration: 0.8,
-        delay: 0.3,
+        delay: 1,
         y: 30,
       });
     }
