@@ -270,7 +270,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
     if (contLineRef.current) {
         fadeIn(contLineRef.current, {
           duration: 0.8,
-          delay: 0.4,
+          delay: 0.8,
           y: 20,
         });
       }
@@ -278,8 +278,8 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
     if (avatarRef.current) {
       scaleIn(avatarRef.current, {
         duration: 0.8,
-        delay: 0.2,
-        scale: 0.5,
+        delay: 0.5,
+        scale: 1.2,
       });
     }
 
@@ -287,7 +287,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
     if (helloRef.current) {
       fadeIn(helloRef.current, {
         duration: 0.6,
-        delay: 0.4,
+        delay: 0.8,
         y: 20,
       });
     }
@@ -296,7 +296,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
     if (nameSectionRef.current) {
       fadeIn(nameSectionRef.current, {
         duration: 0.6,
-        delay: 0.6,
+        delay: 1,
         y: 20,
       });
     }
@@ -305,7 +305,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
     if (taglineRef.current) {
       fadeIn(taglineRef.current, {
         duration: 0.8,
-        delay: 0.8,
+        delay: 1.2,
         y: 20,
       });
     }
@@ -314,7 +314,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
     if (socialLinksRef.current) {
         fadeIn(socialLinksRef.current, {
           duration: 0.6,
-          delay: 1,
+          delay: 1.4,
           y: 10,
         });
       }
@@ -327,7 +327,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
       if (links.length > 0) {
         // Use setTimeout to delay the animation instead of delay parameter
           staggerFadeUp(links, {
-            delay: 1,
+            delay: 1.4,
             duration: 0.5,
             stagger: 0.1,
             distance: 20,
@@ -339,7 +339,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
     if (locationRef.current) {
       fadeIn(locationRef.current, {
         duration: 0.6,
-        delay: 1.4,
+        delay: 2.2,
         y: 10,
       });
     }

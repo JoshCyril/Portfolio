@@ -76,6 +76,8 @@ export default function PageTransition({ children }: PageTransitionProps) {
           (elem as HTMLElement).style.pointerEvents = 'auto';
         });
       }
+      // Trigger Line animation on initial mount - no delay
+      window.dispatchEvent(new CustomEvent('pageTransitionComplete'));
       return;
     }
 
@@ -233,6 +235,8 @@ export default function PageTransition({ children }: PageTransitionProps) {
             interactiveElements.forEach((elem) => {
               (elem as HTMLElement).style.pointerEvents = 'auto';
             });
+            // Trigger Line animation
+            window.dispatchEvent(new CustomEvent('pageTransitionComplete'));
           } else {
             // Pathname changed - restore pointer events
             container.style.pointerEvents = 'auto';

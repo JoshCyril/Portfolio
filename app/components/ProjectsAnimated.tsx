@@ -21,7 +21,7 @@ export default function ProjectsAnimated({ projects }: ProjectsAnimatedProps) {
         if (titleRef.current) {
             fadeIn(titleRef.current, {
                 duration: 0.6,
-                delay: 1.6,
+                delay: 1.8,
                 y: 10,
             });
         }
