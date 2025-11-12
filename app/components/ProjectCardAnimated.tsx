@@ -157,12 +157,12 @@ export default function ProjectCardAnimated({ isDimmed = false, onMouseEnter, on
             </p>
           </CardContent>
           <CardFooter className="bottom-2 mt-2 grid grid-cols-2 gap-2 text-base">
-            <Button asChild variant="cardb">
+            <Button asChild variant="cardb" enableRipple>
               <Link href={`/projects/${project.slug}`}>
                 <File size={16} className="mr-2" /> View
               </Link>
             </Button>
-            <Button asChild variant="cardb">
+            <Button asChild variant="cardb" enableRipple>
               <Link href={project.link.url} rel="noopener noreferrer" target="_blank">
                 <ArrowUpRightFromSquare className="mr-2" size={16} /> {project.link.title}
               </Link>

@@ -213,6 +213,8 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
                 disabled={loading}
                 variant="outline"
                 className="min-w-32"
+                enableRipple
+                enableMagnetic
               >
                 {loading ? (
                   <>
@@ -247,6 +249,8 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
                 featuredOnly: false,
               });
             }}
+            enableRipple
+            enableMagnetic
           >
             Clear Filters
           </Button>

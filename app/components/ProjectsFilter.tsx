@@ -124,6 +124,7 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
                 size="icon"
                 className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6"
                 onClick={() => onFiltersChange({ ...filters, searchQuery: '' })}
+                enableRipple
               >
                 <X className="h-4 w-4" />
               </Button>

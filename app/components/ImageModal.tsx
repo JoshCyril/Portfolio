@@ -97,6 +97,9 @@ export function ImageModal({ isOpen, onClose, imageUrl, alt }: ImageModalProps) 
             onClick={onClose}
             aria-label="Close modal"
             type="button"
+            enableRipple
+            enableMagnetic
+            magneticStrength={0.15}
           >
             <X className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>

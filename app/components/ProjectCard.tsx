@@ -45,10 +45,10 @@ export default function ProjectCard(project:simpleProject) {
                         <p className="mt-2 line-clamp-5 text-base font-normal leading-loose text-muted-foreground">{project.description}</p>
                     </CardContent>
                     <CardFooter className="bottom-2 mt-2 grid grid-cols-2 gap-2 text-base">
-                        <Button asChild variant="cardb">
+                        <Button asChild variant="cardb" enableRipple>
                             <Link href={`/projects/${project.slug}`}><File size={16} className="mr-2"/> View</Link>
                         </Button>
-                        <Button asChild variant="cardb" >
+                        <Button asChild variant="cardb" enableRipple>
                             <Link href={project.link.url} rel="noopener noreferrer" target="_blank"><ArrowUpRightFromSquare className="mr-2" size={16}/> {project.link.title}</Link>
                         </Button>
                     </CardFooter>

@@ -1,8 +1,11 @@
+"use client"
+
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+import { createRipple, MagneticButton } from "@/app/lib/button-effects"
 
 const buttonVariants = cva(
   "inline-flex items-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
@@ -39,18 +42,59 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  enableRipple?: boolean
+  enableMagnetic?: boolean
+  rippleColor?: string
+  magneticStrength?: number
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      asChild = false,
+      enableRipple = false,
+      enableMagnetic = false,
+      rippleColor,
+      magneticStrength = 0.3,
+      onClick,
+      ...props
+    },
+    ref
+  ) => {
     const Comp = asChild ? Slot : "button"
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    )
+
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+      if (enableRipple) {
+        createRipple(e as any, rippleColor)
+      }
+      onClick?.(e as React.MouseEvent<HTMLButtonElement>)
+    }
+
+    const buttonProps = {
+      ...props,
+      ref: asChild ? undefined : ref,
+      className: cn(
+        buttonVariants({ variant, size, className }),
+        enableRipple && "relative overflow-hidden"
+      ),
+      onClick: handleClick,
+    }
+
+    const buttonContent = <Comp {...buttonProps} />
+
+    // Apply magnetic effect if enabled
+    if (enableMagnetic) {
+      return (
+        <MagneticButton strength={magneticStrength} className="inline-block">
+          {buttonContent}
+        </MagneticButton>
+      )
+    }
+
+    return buttonContent
   }
 )
 Button.displayName = "Button"

@@ -214,7 +214,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
                   <TableCell className="font-medium" >{link.title}</TableCell>
                   <TableCell>{link.description}</TableCell>
                   <TableCell className="inline-flex break-words">
-                    <Button asChild variant="link" className="break-words">
+                    <Button asChild variant="link" className="break-words" enableRipple>
                       <Link href={link.url} rel="noopener noreferrer" target="_blank">
                         <span className="hidden sm:hidden lg:block">{link.url}</span>
                         <ArrowUpRightFromSquare className="ml-2" size={16}/></Link>
