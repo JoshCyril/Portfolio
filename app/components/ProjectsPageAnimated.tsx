@@ -38,9 +38,9 @@ export default function ProjectsPageAnimated({ initialProjects, totalCount, tags
   return (
     <div className="mb-10 grid h-fit place-items-center py-6 md:mt-28">
       <div className="z-10 w-11/12 max-w-screen-2xl">
-        <div className="relative col-span-4 mb-4 ml-3 flex w-full basis-full items-center py-2">
+        <div ref={titleRef} className="relative col-span-4 mb-4 ml-3 flex w-full basis-full items-center py-2">
           <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
-          <span ref={titleRef} className="flex text-2xl font-bold md:text-3xl">Check out my projects</span>
+          <span className="flex text-2xl font-bold md:text-3xl">Project vault</span>
         </div>
 
         <div ref={contentRef}>

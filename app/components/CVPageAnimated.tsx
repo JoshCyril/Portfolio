@@ -34,9 +34,9 @@ export default function CVPageAnimated({ fileURL }: CVPageAnimatedProps) {
   return (
     <div className="mb-10 grid h-fit place-items-center py-6 md:mt-24">
       <div className="z-10 w-11/12 max-w-screen-2xl">
-        <div className="relative col-span-4 mb-4 ml-3 flex w-full basis-full items-center py-2">
+        <div ref={titleRef} className="relative col-span-4 mb-4 ml-3 flex w-full basis-full items-center py-2">
           <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
-          <span ref={titleRef} className="flex text-2xl font-bold md:text-3xl">Curriculum Vitae</span>
+          <span className="flex text-2xl font-bold md:text-3xl">Curriculum Vitae</span>
         </div>
 
         <div className="relative mb-2 mt-0 basis-full rounded-lg p-3">
