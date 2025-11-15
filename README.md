@@ -2,182 +2,69 @@
 
 # Portfolio
 
-A modern, responsive portfolio built with Next.js, TypeScript, and Tailwind CSS. Showcases projects, CV, and interactive sections with a clean UI.
+An interactive storytelling space for my work. Built with cinematic motion, data-informed storytelling, and a CMS-powered pipeline, it showcases high-impact projects, experience, and craft in a single scroll.
 
-## Tech Stack
+## Snapshot
 
-- **Next.js**: React framework for server-side rendering and static site generation.
-- **TypeScript**: Type-safe development for scalable and maintainable code.
-- **Tailwind CSS**: Utility-first CSS for rapid UI development and custom theming.
-- **Radix UI**: Accessible UI primitives for dialogs, dropdowns, tooltips, and more.
-- **Sanity**: Headless CMS integration for dynamic content management.
-- **Chart.js & react-chartjs-2**: Data visualization for project stats and graphs.
-- **Embla Carousel**: Smooth, customizable carousel for project showcases.
-- **Next Themes**: Dark/light mode support.
-- **Lucide React**: Icon library for crisp, customizable icons.
-- **GSAP**: Professional animation library for scroll-triggered animations and smooth transitions.
+- **Motion-first hero**: Split-text reveals, avatar choreography, and a responsive theme toggle anchor the landing experience.
+- **Project vault**: Filterable, GSAP-enhanced cards that animate on scroll and respond to hover with tilt, parallax, and ripple effects.
+- **Insightful visuals**: Chart.js dashboards and a force-directed skills graph translate data into narrative.
+- **Living CV**: Embedded PDF viewer, micro-interactions, and downloadable assets keep hiring conversations frictionless.
 
-## Features
+## Experience Flow
 
-### Core Features
-- Project cards and detail pages
-- CV section
-- About and main sections
-- Responsive navigation and footer
-- Theme toggle (dark/light)
-- Data-driven charts and graphs
-- Modular component structure
+### Hero & Navigation
+- GSAP-sequenced greetings, location badge, and actionable CTAs.
+- Auto-hiding navigation with scroll-aware progress indicator and animated theme toggle.
 
-### ✨ GSAP Animations & Micro-Interactions
+### Project Vault
+- Server-rendered data from Sanity, enriched client-side with advanced filtering, searching, and featured sorting.
+- Dynamic “load more” leverages streaming data, skeleton states, and abortable fetches for responsiveness.
+- Detail pages mix portable text case studies, lightbox galleries, and structured link tables.
 
-#### Scroll Animations
-- **Scroll Progress Indicator**: Visual progress bar at the top of the page
-- **Scroll-Triggered Reveals**: Section titles and content fade-up on scroll
-- **Smooth Scroll-to-Section**: Smooth scrolling navigation with GSAP
+### CV Studio
+- Securely streamed PDF with inline viewer, skeleton loading states, and immediate download affordances.
+- Dedicated route retains the brand aesthetic while focusing on recruiter-friendly content.
 
-#### Hero Section
-- Avatar scale-in animation
-- Staggered text reveals
-- Social links with stagger effect
-- Location badge fade-in
+### Data Storytelling
+- **Skills node graph**: D3 force simulation with responsive sizing, zoom, pan, and tooltips.
+- **Graph section**: Chart.js + react-chartjs-2 for experience timelines and capability heatmaps.
 
-#### Project Cards
-- Staggered fade-up animations on load
-- **3D tilt effect** on hover (GSAP-powered)
-- **Image parallax** on hover
-- **Ripple effects** on button clicks
-- Smooth hover transitions
+## Stack
 
-#### Navigation
-- Slide-in animation on page load
-- Auto-hide on scroll down, show on scroll up
-- Smooth scroll to top functionality
-- Animated theme toggle with rotation
+- **Next.js 14 (App Router)** for hybrid rendering, data streaming, and route-level transitions.
+- **TypeScript** ensures strict contracts between Sanity schemas, API routes, and UI layers.
+- **Tailwind CSS + Radix UI** deliver a cohesive design system with accessible primitives.
+- **GSAP & ScrollTrigger** power hero motion, parallax cards, and scroll-linked progress.
+- **Sanity CMS** drives projects, tags, about content, CV assets, and footer messaging via GROQ queries.
+- **Chart.js, react-chartjs-2, D3** visualize timelines, metrics, and relationship graphs.
+- **Next Themes & Lucide** handle theming and iconography with zero layout shifts.
 
-#### About Section
-- Content block fade-ins
-- Staggered skill tag animations
-- Graph chart reveal animations
-- Smooth section transitions
+## Motion & Interaction System
 
-#### Experience Section
-- Staggered animations for experience cards
-- Education cards with fade-up
-- Expertise items with sequential reveals
+- Scroll-triggered fades, staggers, and scale-ins ensure every section enters with intent.
+- Button micro-interactions: magnetic hover, Material ripple, and parallax tilt on cards.
+- Page-level transitions and a global loading screen keep navigation feeling cinematic.
+- Reduced-motion compliance and GPU-friendly transforms maintain 60fps even under stress.
 
-#### Footer
-- Fade-in animation on scroll
+## Content Pipeline
 
-#### Micro-Interactions
-- **Button Ripple Effects**: Material Design-inspired ripple on click
-- **Magnetic Buttons**: Subtle pull effect on hover (optional)
-- **Theme Toggle Animation**: Smooth rotation on theme change
-- **Smooth Page Transitions**: Fade transitions between routes (optional)
+- Headless CMS (Sanity) hosts projects, tags, copy, CV links, and footer metadata.
+- GROQ queries are parameterized and cached, with ISR revalidation every 30s.
+- Portable Text rendering unlocks rich case studies with links, lists, and highlights.
+- Image URLs are generated on demand with `@sanity/image-url`, feeding Next/Image.
 
-#### Performance & Accessibility
-- **GPU Acceleration**: All animations use transform/opacity
-- **Will-Change Optimization**: Dynamic will-change management
-- **Reduced Motion Support**: Full `prefers-reduced-motion` compliance
-- **60fps Animations**: Optimized for smooth performance
-- **Lazy Loading**: Animations only trigger when in viewport
+## Performance & Accessibility
 
-## 🎨 Animation Details
+- Route-level skeletons (Projects, CV) provide instant feedback while data streams in.
+- Abortable pagination requests prevent duplicate network calls on rapid interaction.
+- Footer timing now hydrates without mismatch, updating relative timestamps client-side.
+- WCAG-aware colors, keyboard-accessible dialogs/tooltips, and reduced-motion fallbacks are built-in.
 
-All animations are built with GSAP and ScrollTrigger for smooth, performant experiences:
-- **Performance Optimized**: Uses transform and opacity for GPU acceleration
-- **Accessible**: Respects user preferences for reduced motion
-- **Responsive**: Animations work seamlessly across all device sizes
-- **Smooth**: 60fps animations with proper easing functions
+## Roadmap Teasers
 
-## 🚀 Optional Future Enhancements
+Check `docs/PROJECT_PLAN.md` for future experiments such as immersive loading screens, pinned sections, custom cursors, and text-splitting headline treatments.
 
-See [PROJECT_PLAN.md](./PROJECT_PLAN.md) for detailed roadmap including:
-- Loading screen animations (component created, ready to use)
-- Advanced parallax effects
-- Custom cursor effects (optional)
-- Scroll-triggered pinning for sections
-- Split text animations for headings
+---
 
-## Folder Structure
-
-- `app/` – Main application, pages, and components
-  - `components/` – UI components and sections
-    - `animations/` – Reusable animation components (ScrollProgress, AnimateOnScroll)
-    - `sections/` – Page sections (Main, About, Projects, E3)
-  - `lib/` – Utility functions, CMS integration, and animation helpers
-- `components/` – Shared UI components (buttons, cards, etc.)
-- `public/` – Static assets (SVGs, icons)
-- `tailwind.config.ts` – Tailwind CSS configuration
-
-## Animation Architecture
-
-The animation system is built with a modular, performant approach:
-
-### Core Utilities
-- **`app/lib/animations.ts`**: Core animation utility functions (fadeIn, fadeUp, stagger, etc.)
-- **`app/lib/animations-context.tsx`**: Animation context provider for GSAP instance management
-- **`app/lib/smooth-scroll.ts`**: Smooth scrolling utilities with GSAP
-- **`app/lib/button-effects.tsx`**: Button micro-interactions (ripple, magnetic)
-- **`app/lib/performance.ts`**: Performance optimization utilities
-
-### Component Structure
-- **Animated Components**: Each section has an `*Animated.tsx` client component wrapper
-- **Server/Client Separation**: Server components fetch data, client components handle animations
-- **Reusable Components**:
-  - `ScrollProgress`: Scroll progress indicator
-  - `AnimateOnScroll`: Wrapper for scroll-triggered animations
-  - `ButtonWithEffects`: Enhanced button with ripple and magnetic effects
-  - `PageTransition`: Smooth page transitions (optional)
-  - `LoadingScreen`: Loading screen with animations (optional)
-
-### Performance Features
-- **Will-Change Management**: Automatic will-change optimization
-- **GPU Acceleration**: Transform and opacity only
-- **Lazy Loading**: Animations trigger on viewport entry
-- **Debounce/Throttle**: Optimized event handlers
-- **Reduced Motion**: Full accessibility support
-
-## Getting Started
-
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-
-### Installation
-
-```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Start production server
-npm start
-```
-
-### Environment Setup
-
-Create a `.env.local` file with your Sanity configuration:
-```env
-NEXT_PUBLIC_SANITY_PROJECT_ID=your_project_id
-NEXT_PUBLIC_SANITY_DATASET=production
-```
-
-## Performance
-
-- **Lighthouse Score**: Optimized for 90+ performance score
-- **Animation Performance**: 60fps animations using GPU acceleration
-- **Bundle Size**: Optimized with code splitting and lazy loading
-- **Accessibility**: WCAG 2.1 AA compliant with reduced motion support
-
-## Credits
-
-Built and maintained by [Josh Cyril](https://github.com/JoshCyril).
-
-## License
-
-This project is open source and available under the [MIT License](LICENSE).
+Crafted by [Josh Cyril](https://github.com/JoshCyril) — always iterating on experience, storytelling, and motion.

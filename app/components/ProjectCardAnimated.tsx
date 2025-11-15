@@ -3,7 +3,7 @@
 import { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { simpleProject } from '../lib/interface';
+import { SimpleProject } from '../lib/interface';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,7 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-interface ProjectCardAnimatedProps extends simpleProject {
+interface ProjectCardAnimatedProps extends SimpleProject {
   isDimmed?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -27,6 +27,9 @@ export default function ProjectCardAnimated({ isDimmed = false, onMouseEnter, on
   const cardRef = useRef<HTMLDivElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const externalLinkDisabled = !project.link?.url;
+  const externalLinkHref = project.link?.url ?? "#";
+  const externalLinkTitle = project.link?.title ?? "Visit";
 
   // Apply dimming effect when isDimmed prop changes
   useEffect(() => {
@@ -162,9 +165,16 @@ export default function ProjectCardAnimated({ isDimmed = false, onMouseEnter, on
                 <File size={16} className="mr-2" /> View
               </Link>
             </Button>
-            <Button asChild variant="cardb" enableRipple>
-              <Link href={project.link.url} rel="noopener noreferrer" target="_blank">
-                <ArrowUpRightFromSquare className="mr-2" size={16} /> {project.link.title}
+            <Button asChild variant="cardb" enableRipple aria-disabled={externalLinkDisabled}>
+              <Link
+                href={externalLinkHref}
+                rel="noopener noreferrer"
+                target="_blank"
+                aria-disabled={externalLinkDisabled}
+                tabIndex={externalLinkDisabled ? -1 : undefined}
+                onClick={externalLinkDisabled ? (event) => event.preventDefault() : undefined}
+              >
+                <ArrowUpRightFromSquare className="mr-2" size={16} /> {externalLinkTitle}
               </Link>
             </Button>
           </CardFooter>

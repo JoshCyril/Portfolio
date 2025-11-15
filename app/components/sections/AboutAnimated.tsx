@@ -5,10 +5,10 @@ import { fadeUp } from '@/app/lib/animations';
 import { PortableText } from '@portabletext/react';
 import GraphSectionAnimated from './GraphSectionAnimated';
 import SkillsNodeGraph from './SkillsNodeGraph';
-import { aboutNTag } from '@/app/lib/interface';
+import { AboutWithTags } from '@/app/lib/interface';
 
 interface AboutAnimatedProps {
-  data: aboutNTag;
+  data: AboutWithTags;
 }
 
 export default function AboutAnimated({ data }: AboutAnimatedProps) {
@@ -136,7 +136,7 @@ export default function AboutAnimated({ data }: AboutAnimatedProps) {
               className="relative rounded-lg bg-secondary p-6 font-normal shadow-sm"
             >
               <div className="prose prose-lg prose-blue max-w-none text-base dark:prose-invert prose-a:text-primary prose-li:marker:text-primary md:text-lg mb-6">
-                <PortableText value={data.about[0].content} />
+                <PortableText value={data.about?.[0]?.content ?? []} />
               </div>
               <GraphSectionAnimated />
             </div>

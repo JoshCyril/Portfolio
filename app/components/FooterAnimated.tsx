@@ -1,21 +1,44 @@
 'use client';
 
-import { useEffect, useRef, useMemo } from 'react';
+import { useEffect, useRef, useMemo, useState } from 'react';
 import { fadeUp } from '@/app/lib/animations';
 import { Copyright } from 'lucide-react';
-import { footerData } from '@/app/lib/interface';
+import { FooterData } from '@/app/lib/interface';
 import TimeAgo from 'javascript-time-ago';
 import en from 'javascript-time-ago/locale/en';
 
 TimeAgo.addDefaultLocale(en);
 
 interface FooterAnimatedProps {
-  data: footerData;
+  data: FooterData;
 }
 
 export default function FooterAnimated({ data }: FooterAnimatedProps) {
   const footerRef = useRef<HTMLDivElement>(null);
   const timeAgo = useMemo(() => new TimeAgo('en-US'), []);
+  const dateFormatter = useMemo(
+    () =>
+      new Intl.DateTimeFormat('en-US', {
+        dateStyle: 'medium',
+        timeZone: 'UTC',
+      }),
+    []
+  );
+  const absoluteUpdateLabel = useMemo(() => {
+    if (!data?.udDate) return 'recently';
+
+    try {
+      const date = typeof data.udDate === 'string' ? new Date(data.udDate) : data.udDate;
+      if (isNaN(date.getTime())) {
+        return 'recently';
+      }
+
+      return dateFormatter.format(date);
+    } catch {
+      return 'recently';
+    }
+  }, [data?.udDate, dateFormatter]);
+  const [lastUpdatedLabel, setLastUpdatedLabel] = useState(absoluteUpdateLabel);
 
   useEffect(() => {
     if (footerRef.current) {
@@ -31,25 +54,29 @@ export default function FooterAnimated({ data }: FooterAnimatedProps) {
     }
   }, []);
 
-  // Normalize and format the date consistently using useMemo to ensure consistency
-  const formattedDate = useMemo(() => {
-    if (!data?.udDate) return 'recently';
+  useEffect(() => {
+    setLastUpdatedLabel(absoluteUpdateLabel);
+  }, [absoluteUpdateLabel]);
+
+  useEffect(() => {
+    if (!data?.udDate) return;
 
     try {
-      // Handle both Date objects and ISO strings
-      const date = typeof data.udDate === 'string' ? new Date(data.udDate) : data.udDate;
-
-      // Validate the date
-      if (isNaN(date.getTime())) {
-        console.warn('Invalid date received:', data.udDate);
-        return 'recently';
+      const parsedDate = typeof data.udDate === 'string' ? new Date(data.udDate) : data.udDate;
+      if (isNaN(parsedDate.getTime())) {
+        return;
       }
 
-      // Format the date - this will be consistent for the same date value
-      return timeAgo.format(date);
+      const updateRelativeLabel = () => {
+        setLastUpdatedLabel(timeAgo.format(parsedDate));
+      };
+
+      updateRelativeLabel();
+      const intervalId = window.setInterval(updateRelativeLabel, 60000);
+
+      return () => window.clearInterval(intervalId);
     } catch (error) {
       console.error('Error formatting date:', error);
-      return 'recently';
     }
   }, [data?.udDate, timeAgo]);
 
@@ -64,7 +91,9 @@ export default function FooterAnimated({ data }: FooterAnimatedProps) {
 
           <div className="font-regular text-sm font-semibold">
             Updated:{' '}
-            <span className="font-normal">{formattedDate}</span>
+            <span className="font-normal" suppressHydrationWarning>
+              {lastUpdatedLabel}
+            </span>
           </div>
         </div>
         <div className="h-24 w-full bg-background bg-gradient-to-r from-primary/10 to-primary/20 sm:h-24 md:h-0"></div>

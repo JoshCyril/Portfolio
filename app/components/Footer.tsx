@@ -1,4 +1,4 @@
-import { footerData } from "@/app/lib/interface";
+import { FooterData } from "@/app/lib/interface";
 import { client } from "@/app/lib/sanity";
 import FooterAnimated from "./FooterAnimated";
 import { cache } from 'react';
@@ -24,7 +24,7 @@ const normalizeDate = (dateInput: string | Date | undefined): string | undefined
 
 // Use React's cache() to ensure the same data is returned within the same render
 // Combined with Next.js revalidation, this ensures consistency across pages
-const getFooterData = cache(async (): Promise<footerData> => {
+const getFooterData = cache(async (): Promise<FooterData> => {
   const query = `
     *[_type == "about"]{
       copyright,
@@ -40,7 +40,7 @@ const getFooterData = cache(async (): Promise<footerData> => {
 
     // Normalize the date to ISO string for consistency
     // This ensures the same date format is used everywhere
-    const normalizedData: footerData = {
+    const normalizedData: FooterData = {
       copyright: data?.copyright || '© 2024',
       udDate: data?.udDate ? normalizeDate(data.udDate) || data.udDate : new Date().toISOString(),
     };
@@ -49,7 +49,7 @@ const getFooterData = cache(async (): Promise<footerData> => {
   } catch (error) {
     console.error('Error fetching footer data:', error);
     // Return fallback data with current date
-    return {
+        return {
       copyright: '© 2024',
       udDate: new Date().toISOString(),
     };

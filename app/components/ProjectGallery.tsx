@@ -14,9 +14,10 @@ import { ImageModal } from './ImageModal';
 import { urlFor } from '@/app/lib/sanity';
 import { gsap } from 'gsap';
 import { prefersReducedMotion } from '@/app/lib/animations';
+import { ProjectGalleryImage } from '@/app/lib/interface';
 
 interface ProjectGalleryProps {
-  gallery: Array<{ asset: any }>;
+  gallery: ProjectGalleryImage[];
 }
 
 export function ProjectGallery({ gallery }: ProjectGalleryProps) {
@@ -49,7 +50,8 @@ export function ProjectGallery({ gallery }: ProjectGalleryProps) {
     );
   }, [gallery]);
 
-  const handleImageClick = (asset: any, index: number) => {
+  const handleImageClick = (asset: ProjectGalleryImage['asset'] | undefined, index: number) => {
+    if (!asset) return;
     const imageUrl = urlFor(asset).url();
     setSelectedImage({
       url: imageUrl,
@@ -61,7 +63,11 @@ export function ProjectGallery({ gallery }: ProjectGalleryProps) {
     setSelectedImage(null);
   };
 
-  if (!gallery || gallery.length === 0) {
+  const validGallery = Array.isArray(gallery)
+    ? gallery.filter((item): item is ProjectGalleryImage => Boolean(item?.asset))
+    : [];
+
+  if (validGallery.length === 0) {
     return null;
   }
 
@@ -74,7 +80,7 @@ export function ProjectGallery({ gallery }: ProjectGalleryProps) {
         className="w-full"
       >
         <CarouselContent>
-          {gallery.map((gall, idx) => (
+          {validGallery.map((gall, idx) => (
             <CarouselItem
               key={idx}
               className="basis-full sm:basis-1/2 md:basis-1/3 md:p-2 lg:basis-1/4 lg:p-3"

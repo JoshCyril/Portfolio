@@ -3,12 +3,12 @@
 import { useEffect, useRef } from 'react';
 import { fadeIn } from '@/app/lib/animations';
 import ProjectsPageClient from "./ProjectsPageClient";
-import { simpleProject } from "@/app/lib/interface";
+import { SimpleProject, SkillTag } from "@/app/lib/interface";
 
 interface ProjectsPageAnimatedProps {
-  initialProjects: simpleProject[];
+  initialProjects: SimpleProject[];
   totalCount: number;
-  tags: any[];
+  tags: SkillTag[];
 }
 
 export default function ProjectsPageAnimated({ initialProjects, totalCount, tags }: ProjectsPageAnimatedProps) {

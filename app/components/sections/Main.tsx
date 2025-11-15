@@ -1,4 +1,4 @@
-import { about } from "@/app/lib/interface";
+import { AboutContent } from "@/app/lib/interface";
 import { client } from "@/app/lib/sanity";
 import MainAnimated from "./MainAnimated";
 
@@ -11,11 +11,11 @@ async function getData(){
       }[0]
     `;
 
-    const data = await client.fetch(query);
+    const data = await client.fetch<AboutContent | null>(query);
     return data;
 }
 
 export default async function Main() {
-    const data:about = await getData();
-    return <MainAnimated tagline={data.tagline} />;
+    const data = await getData();
+    return <MainAnimated tagline={data?.tagline ?? ''} />;
   }

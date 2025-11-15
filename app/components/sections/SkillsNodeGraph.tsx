@@ -6,7 +6,7 @@ import { drag } from 'd3-drag';
 import { select } from 'd3-selection';
 import { fadeUp } from '@/app/lib/animations';
 import { urlFor } from '@/app/lib/sanity';
-import { aboutNTag } from '@/app/lib/interface';
+import { AboutWithTags } from '@/app/lib/interface';
 
 interface Node {
   id: string;
@@ -24,7 +24,7 @@ interface Node {
 }
 
 interface SkillsNodeGraphProps {
-  data: aboutNTag;
+  data: AboutWithTags;
 }
 
 export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
@@ -35,12 +35,7 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
   const nodeElementsRef = useRef<Map<string, { group: SVGGElement; image: HTMLImageElement; text: SVGTextElement; foreignObject: SVGForeignObjectElement }>>(new Map());
   const [dimensions, setDimensions] = useState({ width: 500, height: 450 }); // Default dimensions
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
-  const [screenSize, setScreenSize] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return { width: window.innerWidth, height: window.innerHeight };
-    }
-    return { width: 1024, height: 768 }; // Default for SSR
-  });
+  const [screenSize, setScreenSize] = useState({ width: 1024, height: 768 }); // Deterministic default for SSR/CSR
 
   // Track screen size changes to refresh graph
   useEffect(() => {
@@ -104,7 +99,7 @@ export default function SkillsNodeGraph({ data }: SkillsNodeGraphProps) {
         tag_count: tag.tag_count,
         tag_url: tag.tag_url,
         radius,
-        imageUrl: urlFor(tag.tag_url).url(),
+        imageUrl: tag.tag_url ? urlFor(tag.tag_url).url() : '',
       };
     });
   }, [data.tags, screenSize.width]);

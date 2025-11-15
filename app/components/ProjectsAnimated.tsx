@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import { fadeIn, fadeUp, staggerFadeUp } from '@/app/lib/animations';
 import { gsap } from 'gsap';
 import Link from 'next/link';
-import { simpleProject } from '../lib/interface';
+import { SimpleProject } from '../lib/interface';
 import ProjectCardAnimated from './ProjectCardAnimated';
 
 interface ProjectsAnimatedProps {
-    projects: simpleProject[];
+    projects: SimpleProject[];
 }
 
 export default function ProjectsAnimated({ projects }: ProjectsAnimatedProps) {
@@ -98,7 +98,7 @@ export default function ProjectsAnimated({ projects }: ProjectsAnimatedProps) {
                 <div className="flex flex-wrap py-3" ref={cardsContainerRef} >
                     {projects.map((project, idx) => (
                         <ProjectCardAnimated
-                            key={idx}
+                            key={project.slug ?? `project-${idx}`}
                             {...project}
                             isDimmed={hoveredCardIndex !== null && hoveredCardIndex !== idx}
                             onMouseEnter={() => setHoveredCardIndex(idx)}

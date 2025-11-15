@@ -2,27 +2,22 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import ProjectCardAnimated from './ProjectCardAnimated';
-import { simpleProject, ProjectFilters } from '@/app/lib/interface';
+import { SimpleProject, ProjectFilters, SkillTag } from '@/app/lib/interface';
 import { staggerFadeUp } from '@/app/lib/animations';
 import { gsap } from 'gsap';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import ProjectsFilter from './ProjectsFilter';
-
-interface Tag {
-  tag_name: string;
-  tag_url: any;
-  tag_count: number;
-}
+import { ProjectCardSkeleton } from './ProjectCardSkeleton';
 
 interface ProjectsPageClientProps {
-  initialProjects: simpleProject[];
+  initialProjects: SimpleProject[];
   totalCount: number;
-  tags: Tag[];
+  tags: SkillTag[];
 }
 
 export default function ProjectsPageClient({ initialProjects, totalCount, tags }: ProjectsPageClientProps) {
-  const [allProjects, setAllProjects] = useState<simpleProject[]>(initialProjects);
+  const [allProjects, setAllProjects] = useState<SimpleProject[]>(initialProjects);
   const [hoveredCardIndex, setHoveredCardIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialProjects.length < totalCount);
@@ -34,6 +29,7 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
   });
   const cardsContainerRef = useRef<HTMLDivElement>(null);
   const loadMoreButtonRef = useRef<HTMLButtonElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Filter and sort projects
   const filteredProjects = useMemo(() => {
@@ -91,10 +87,31 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
     setLoading(true);
     try {
       const offset = allProjects.length;
-      const response = await fetch(`/api/projects?offset=${offset}&limit=6`);
-      const data = await response.json();
+      const params = new URLSearchParams({
+        offset: String(offset),
+        limit: '6',
+      });
 
-      if (data.projects && data.projects.length > 0) {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      const response = await fetch(`/api/projects?${params.toString()}`, {
+        headers: {
+          Accept: 'application/json',
+        },
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch more projects (${response.status})`);
+      }
+
+      const data: { projects?: SimpleProject[] } = await response.json();
+
+      if (Array.isArray(data.projects) && data.projects.length > 0) {
         setAllProjects((prev) => {
           const newProjects = [...prev, ...data.projects];
           setHasMore(newProjects.length < totalCount);
@@ -104,8 +121,12 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
         setHasMore(false);
       }
     } catch (error) {
+      if ((error as DOMException).name === 'AbortError') {
+        return;
+      }
       console.error('Error loading more projects:', error);
     } finally {
+      abortControllerRef.current = null;
       setLoading(false);
     }
   };
@@ -195,13 +216,17 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
           <div ref={cardsContainerRef} className="div flex flex-wrap py-3">
             {filteredProjects.map((project, idx) => (
               <ProjectCardAnimated
-                key={`${project.slug}-${idx}`}
+                key={project.slug ?? `project-${idx}`}
                 {...project}
                 isDimmed={hoveredCardIndex !== null && hoveredCardIndex !== idx}
                 onMouseEnter={() => setHoveredCardIndex(idx)}
                 onMouseLeave={() => setHoveredCardIndex(null)}
               />
             ))}
+            {loading &&
+              Array.from({ length: 3 }).map((_, idx) => (
+                <ProjectCardSkeleton key={`skeleton-${idx}`} />
+              ))}
           </div>
 
           {/* Show Load More only if we haven't loaded all projects yet */}
@@ -219,7 +244,7 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Loading...
+                    Loading more...
                   </>
                 ) : (
                   'Load More'

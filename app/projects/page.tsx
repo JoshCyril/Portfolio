@@ -1,54 +1,65 @@
-import { client } from "@/app/lib/sanity";
-import { simpleProject } from "@/app/lib/interface";
 import ProjectsPageAnimated from "../components/ProjectsPageAnimated";
+import { SimpleProject, SkillTag } from "@/app/lib/interface";
+import { client } from "@/app/lib/sanity";
+import { cache } from "react";
 
-export const revalidate = 30 // revalidate at most 30 sec
+export const revalidate = 30; // revalidate at most 30 sec
 
-async function getData(limit: number = 6, offset: number = 0){
-    const query = `
-    *[_type == "project"]|order(pDate desc)[${offset}...${offset + limit}]{
+const PAGE_SIZE = 6;
+
+const getProjects = cache(async (limit: number = PAGE_SIZE, offset: number = 0) => {
+  const query = `
+    *[_type == "project"] | order(pDate desc) [$start...$end]{
+      title,
+      proImg,
+      "link": links[0]{title,url},
+      "slug": slug.current,
+      description,
+      proDate,
+      featured,
+      "tags": tags[]->{
         title,
-        proImg,
-        "link": links[0]{title,url},
-        "slug": slug.current,
-        description,
-        proDate,
-        featured,
-        "tags": tags[]->{
-          title,
-          tagImg
-        },
-        "tagCount": 0
-      }
-    `;
+        tagImg
+      },
+      "tagCount": select(count(tags) > 3 => count(tags) - 3, 0)
+    }
+  `;
 
-    const data = await client.fetch(query);
-    return data;
-}
+  return client.fetch<SimpleProject[]>(query, {
+    start: offset,
+    end: offset + limit,
+  });
+});
 
-async function getTags() {
-    const query = `
+const getTags = cache(async () => {
+  const query = `
     *[_type == "tag"]{
-        "tag_name": title,
-        "tag_url": tagImg,
-        "tag_count": count(*[_type == "project" && references(^._id)])
-      } | order(tag_count desc)
-    `;
-    const data = await client.fetch(query);
-    // Filter tags where tag_count > 0 and sort by tag_count descending
-    return data.filter((tag: { tag_count: number }) => tag.tag_count > 0);
-}
+      "tag_name": title,
+      "tag_url": tagImg,
+      "tag_count": count(*[_type == "project" && references(^._id)])
+    } | order(tag_count desc)
+  `;
+  const data = await client.fetch<SkillTag[]>(query);
+  return data.filter((tag) => tag.tag_count > 0);
+});
 
-async function getTotalCount(): Promise<number> {
-    const query = `count(*[_type == "project"])`;
-    const count: number = await client.fetch(query);
-    return count;
-}
+const getTotalCount = cache(async (): Promise<number> => {
+  const query = `count(*[_type == "project"])`;
+  return client.fetch<number>(query);
+});
 
-export default async function projects(){
-    const initialProjects:simpleProject[] = await getData(6, 0);
-    const totalCount = await getTotalCount();
-    const tags = await getTags();
+export default async function ProjectsPage() {
+  const [initialProjects, totalCount, tags] = await Promise.all([
+    getProjects(PAGE_SIZE, 0),
+    getTotalCount(),
+    getTags(),
+  ]);
 
-    return <ProjectsPageAnimated initialProjects={initialProjects} totalCount={totalCount} tags={tags} />;
+  return (
+    <ProjectsPageAnimated
+      initialProjects={initialProjects}
+      totalCount={totalCount}
+      tags={tags}
+    />
+  );
 }

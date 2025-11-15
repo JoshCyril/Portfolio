@@ -1,4 +1,4 @@
-import { cvPDF } from "@/app/lib/interface";
+import { CvPdf } from "@/app/lib/interface";
 import { client } from "@/app/lib/sanity";
 import CVPageAnimated from "../components/CVPageAnimated";
 
@@ -11,11 +11,11 @@ async function getData(){
     }[0]
     `;
 
-    const data = await client.fetch(query);
+    const data = await client.fetch<CvPdf | null>(query);
     return data;
 }
 
 export default async function Home() {
-  const data:cvPDF = await getData();
-  return <CVPageAnimated fileURL={data.fileURL} />;
+  const data = await getData();
+  return <CVPageAnimated fileURL={data?.fileURL ?? ''} />;
 }

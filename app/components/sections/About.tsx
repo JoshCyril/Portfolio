@@ -1,4 +1,4 @@
-import { aboutNTag } from "@/app/lib/interface";
+import { AboutWithTags } from "@/app/lib/interface";
 import { client } from "@/app/lib/sanity";
 import AboutAnimated from "./AboutAnimated";
 
@@ -15,11 +15,11 @@ async function getData(){
     }
     `;
 
-    const data = await client.fetch(query);
+    const data = await client.fetch<AboutWithTags>(query);
     return data;
 }
 
 export default async function About(){
-    const data:aboutNTag = await getData();
+    const data = await getData();
     return <AboutAnimated data={data} />;
 }

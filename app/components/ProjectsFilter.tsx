@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useEffect, useState } from 'react';
-import { ProjectFilters } from '@/app/lib/interface';
+import { ProjectFilters, SkillTag } from '@/app/lib/interface';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -18,14 +18,8 @@ import Image from 'next/image';
 import { urlFor } from '@/app/lib/sanity';
 import { fadeUp } from '@/app/lib/animations';
 
-interface Tag {
-  tag_name: string;
-  tag_url: any;
-  tag_count: number;
-}
-
 interface ProjectsFilterProps {
-  tags: Tag[];
+  tags: SkillTag[];
   filters: ProjectFilters;
   onFiltersChange: (filters: ProjectFilters) => void;
 }

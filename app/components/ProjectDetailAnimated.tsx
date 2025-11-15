@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { fullProject } from "@/app/lib/interface";
+import { FullProject } from "@/app/lib/interface";
 import { urlFor } from "@/app/lib/sanity";
 import { Card, CardContent } from "@/components/ui/card";
 import { PortableText } from "@portabletext/react";
@@ -21,7 +21,7 @@ import { ProjectGallery } from "@/app/components/ProjectGallery";
 import { fadeIn, staggerFadeUp } from '@/app/lib/animations';
 
 interface ProjectDetailAnimatedProps {
-  data: fullProject;
+  data: FullProject;
 }
 
 export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedProps) {
@@ -150,7 +150,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
               <div className="mt-3 basis-full p-3">
                 <div className="mt-2 flex flex-wrap">
                   <div ref={tagsRef} className="mt-2 flex flex-wrap">
-                    {data.tags.map((tag, idx) =>(
+                    {(data.tags ?? []).map((tag, idx) =>(
                       <div key={idx} className="m-1 flex items-center rounded-md border border-primary/20 p-1 pr-2 text-sm leading-5">
                         <Image src={urlFor(tag.tagImg).url()} alt={tag.title+" image"} width={22} height={22} className="mr-2 rounded-md"/> {tag.title}
                       </div>
@@ -165,7 +165,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
             <div className="relative h-full basis-full rounded-lg bg-secondary p-6 shadow-sm">
               {/* overview */}
               <div className="prose prose-lg prose-blue max-w-none text-base dark:prose-invert prose-a:text-primary prose-li:marker:text-primary md:text-lg">
-                <PortableText value={data.summary} />
+                <PortableText value={data.summary ?? []} />
               </div>
             </div>
           </div>
@@ -179,7 +179,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
             <Card ref={caseStudyContentRef} className="h-full w-full rounded-lg bg-secondary p-1" >
               <CardContent className="max-w-5xl p-4">
                 <div className="prose prose-lg prose-blue max-w-none text-base dark:prose-invert prose-a:text-primary prose-li:marker:text-primary md:text-lg">
-                  <PortableText value={data.content} />
+                  <PortableText value={data.content ?? []} />
                 </div>
               </CardContent>
             </Card>
@@ -191,7 +191,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
           </div>
 
           <div className="basis-full md:p-5 lg:p-6">
-            <ProjectGallery gallery={data.gallery} />
+            <ProjectGallery gallery={data.gallery ?? []} />
           </div>
 
           <div ref={linksSectionRef} className="relative col-span-4 mb-4 ml-3 mt-6 flex w-full basis-full items-center py-2">
@@ -209,7 +209,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
                 </TableRow>
               </TableHeader>
               <TableBody ref={linksTableRef}>
-                {data.links.map((link, idx) =>(
+                {(data.links ?? []).map((link, idx) =>(
                 <TableRow key={idx}>
                   <TableCell className="font-medium" >{link.title}</TableCell>
                   <TableCell>{link.description}</TableCell>

@@ -1,15 +1,18 @@
 import { createClient } from "next-sanity";
 import imageUrlBuilder from "@sanity/image-url";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
 
-export const client = createClient({
-  apiVersion: "v2025-10-09",
-  dataset: "production",
-  projectId: "99rn9hgb",
-  useCdn: false,
-});
+import { sanityEnv } from "./env";
+
+const sanityConfig = {
+  apiVersion: sanityEnv.apiVersion,
+  dataset: sanityEnv.dataset,
+  projectId: sanityEnv.projectId,
+  useCdn: sanityEnv.useCdn,
+};
+
+export const client = createClient(sanityConfig);
 
 const builder = imageUrlBuilder(client);
 
-export function urlFor(source: any) {
-  return builder.image(source);
-}
+export const urlFor = (source: SanityImageSource) => builder.image(source);
