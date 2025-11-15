@@ -135,7 +135,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
       <div className="z-10 w-11/12 max-w-screen-2xl">
         <div className="relative col-span-4 mb-4 ml-3 mt-0 flex w-full basis-full items-center py-2 md:mt-8">
           <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
-          <h1 ref={titleRef} className="flex text-2xl font-bold md:text-3xl">{data.title}</h1>
+          <h1 ref={titleRef} className="flex text-3xl font-bold md:text-4xl">{data.title}</h1>
         </div>
 
         <div className="flex flex-wrap py-3">
@@ -172,7 +172,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
 
           <div ref={caseStudyRef} className="relative col-span-4 ml-3 mt-8 flex w-full basis-full items-center py-2">
             <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
-            <h1 className="flex text-2xl font-bold md:text-4xl">Case Study</h1>
+            <h2 className="flex text-2xl font-bold md:text-3xl">Case Study</h2>
           </div>
 
           <div className="mt-3 flex basis-full flex-wrap p-3">

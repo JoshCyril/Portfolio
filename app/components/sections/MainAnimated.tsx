@@ -265,6 +265,10 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
   };
 
   useEffect(() => {
+    // Capture ref values at the start of the effect
+    const nameAnim = nameAnimationRef.current;
+    const magneticAnims = magneticAnimationsRef.current;
+
     // Animate avatar with scale
 
     if (contLineRef.current) {
@@ -346,16 +350,15 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
 
     // Cleanup on unmount
     return () => {
-      const nameAnim = nameAnimationRef.current;
-      const magneticAnims = magneticAnimationsRef.current;
-
       if (nameAnim) {
         nameAnim.kill();
       }
-      magneticAnims.forEach((anim) => {
-        anim.kill();
-      });
-      magneticAnims.clear();
+      if (magneticAnims) {
+        magneticAnims.forEach((anim) => {
+          anim.kill();
+        });
+        magneticAnims.clear();
+      }
     };
   }, []);
 

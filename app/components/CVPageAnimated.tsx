@@ -8,7 +8,7 @@ interface CVPageAnimatedProps {
 }
 
 export default function CVPageAnimated({ fileURL }: CVPageAnimatedProps) {
-  const titleRef = useRef<HTMLSpanElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
   const embedContainerRef = useRef<HTMLDivElement>(null);
   const [isPdfLoaded, setIsPdfLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);

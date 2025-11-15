@@ -12,7 +12,7 @@ interface ProjectsPageAnimatedProps {
 }
 
 export default function ProjectsPageAnimated({ initialProjects, totalCount, tags }: ProjectsPageAnimatedProps) {
-  const titleRef = useRef<HTMLSpanElement>(null);
+  const titleRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

@@ -112,8 +112,9 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
       const data: { projects?: SimpleProject[] } = await response.json();
 
       if (Array.isArray(data.projects) && data.projects.length > 0) {
+        const newProjectsData = data.projects;
         setAllProjects((prev) => {
-          const newProjects = [...prev, ...data.projects];
+          const newProjects = [...prev, ...newProjectsData];
           setHasMore(newProjects.length < totalCount);
           return newProjects;
         });
