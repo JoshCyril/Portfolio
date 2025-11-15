@@ -118,7 +118,7 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
               onChange={handleSearchChange}
               className="pl-10 pr-4"
             />
-            {filters.searchQuery && (
+            {/* {filters.searchQuery && (
               <Button
                 variant="ghost"
                 size="icon"
@@ -128,7 +128,7 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
               >
                 <X className="h-4 w-4" />
               </Button>
-            )}
+            )} */}
           </div>
 
           {/* Sort Dropdown */}
