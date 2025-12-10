@@ -147,6 +147,7 @@ export default function E3Animated({ data }: E3AnimatedProps) {
                           width={120}
                           height={120}
                           className="z-20 h-full w-full bg-primary object-cover object-center shadow-2xl grayscale transition-all duration-300 ease-in-out group-hover:grayscale-0"
+                          loading="lazy"
                         />
                       </div>
                       <div className="col-span-4 ml-2 p-2 pr-3">
@@ -198,6 +199,7 @@ export default function E3Animated({ data }: E3AnimatedProps) {
                           width={120}
                           height={120}
                           className="z-20 h-full w-full bg-primary object-cover object-center shadow-2xl grayscale transition-all duration-300 ease-in-out group-hover:grayscale-0"
+                          loading="lazy"
                         />
                       </div>
                       <div className="col-span-3 ml-2 p-2">

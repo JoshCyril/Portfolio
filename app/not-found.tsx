@@ -55,8 +55,8 @@ export default function NotFound() {
           </p>
         </div>
 
-        <div ref={buttonRef} className="mt-6 flex ml-3">
-          <Button asChild size="lg" variant="secondary" enableMagnetic enableRipple magneticStrength={0.2}>
+        <div ref={buttonRef} className="ml-3 mt-6 flex">
+          <Button asChild size="lg" variant="secondary" enableMagnetic enableRipple magneticStrength={0.2} aria-label="Home">
             <Link href="/" className="flex items-center gap-2">
               <Home size={18} />
               Back to home

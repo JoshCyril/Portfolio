@@ -116,7 +116,7 @@ export function ImageModal({ isOpen, onClose, imageUrl, alt }: ImageModalProps) 
                 width={1200}
                 height={1200}
                 className="max-w-full max-h-[90vh] w-auto h-auto object-contain rounded-lg"
-                priority
+                loading="lazy"
                 quality={95}
                 sizes="(max-width: 768px) 95vw, (max-width: 1200px) 90vw, 1200px"
               />

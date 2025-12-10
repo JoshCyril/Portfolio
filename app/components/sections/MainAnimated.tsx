@@ -371,7 +371,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
             <div className="flex items-center">
               <div ref={avatarRef} style={{ opacity: 0 }}>
                 <Avatar className="ml-1">
-                  <AvatarImage src="https://github.com/joshcyril.png" alt="@joshcyril" />
+                  <AvatarImage src="/pfp.webp" alt="@joshcyril" />
                   <AvatarFallback>JC</AvatarFallback>
                 </Avatar>
               </div>
@@ -381,7 +381,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
               I&apos;m{' '}
               <span
                 ref={nameTextRef}
-                className="text-4xl font-bold text-primary md:text-5xl cursor-pointer select-none relative"
+                className="relative cursor-pointer select-none text-4xl font-bold text-primary md:text-5xl"
                 onMouseEnter={handleNameHover}
                 onMouseLeave={handleNameLeave}
                 onMouseMove={handleMouseMove}
@@ -411,7 +411,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger>
-                  <Button asChild variant="ghosth" enableMagnetic enableRipple magneticStrength={0.2}>
+                  <Button asChild variant="ghosth" enableMagnetic enableRipple magneticStrength={0.2} aria-label="LinkedIn">
                     <Link href="https://www.linkedin.com/in/joshcyril/" rel="noopener noreferrer" target="_blank">
                       <Linkedin size={18} />
                     </Link>
@@ -426,7 +426,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
 
               <Tooltip>
                 <TooltipTrigger>
-                  <Button asChild variant="ghosth" enableMagnetic enableRipple magneticStrength={0.2}>
+                  <Button asChild variant="ghosth" enableMagnetic enableRipple magneticStrength={0.2} aria-label="Discord">
                     <Link href="https://discordapp.com/users/1136917465260097576" rel="noopener noreferrer" target="_blank">
                       <Bot size={18} />
                     </Link>
@@ -441,8 +441,8 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
 
               <Tooltip>
                 <TooltipTrigger>
-                  <Button asChild variant="ghosth" enableMagnetic enableRipple magneticStrength={0.2}>
-                    <Link href="mailto:joshcyril@proton.me" rel="noopener noreferrer" target="_blank">
+                  <Button asChild variant="ghosth" enableMagnetic enableRipple magneticStrength={0.2} aria-label="Email">
+                    <Link href="mailto:joshcyril_25@outlook.com" rel="noopener noreferrer" target="_blank">
                       <Mail size={18} />
                     </Link>
                   </Button>
@@ -456,7 +456,7 @@ export default function MainAnimated({ tagline }: MainAnimatedProps) {
 
               <Tooltip>
                 <TooltipTrigger>
-                  <Button asChild variant="ghosth" enableMagnetic enableRipple magneticStrength={0.2}>
+                  <Button asChild variant="ghosth" enableMagnetic enableRipple magneticStrength={0.2} aria-label="GitHub">
                     <Link href="https://github.com/JoshCyril" rel="noopener noreferrer" target="_blank">
                       <Github size={18} />
                     </Link>

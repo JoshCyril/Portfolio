@@ -111,6 +111,7 @@ export function ProjectGallery({ gallery }: ProjectGalleryProps) {
                       alt={`Screenshot ${idx + 1}`}
                       width={1000}
                       height={1000}
+                      loading="lazy"
                     />
                     {/* Overlay on hover */}
                     <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/10 transition-colors duration-300 rounded-xl" />

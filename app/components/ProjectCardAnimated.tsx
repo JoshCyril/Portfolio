@@ -117,6 +117,7 @@ export default function ProjectCardAnimated({ isDimmed = false, onMouseEnter, on
               width={720}
               height={720}
               className="z-20 mt-12 w-11/12 rounded-3xl bg-primary object-cover shadow-2xl grayscale ease-in-out group-hover:grayscale-0"
+              loading="lazy"
             />
           </div>
 
@@ -132,6 +133,7 @@ export default function ProjectCardAnimated({ isDimmed = false, onMouseEnter, on
                       width={24}
                       height={24}
                       className="rounded-md grayscale ease-in-out group-hover:grayscale-0"
+                      loading="lazy"
                     />
                   </TooltipTrigger>
                   <TooltipContent>

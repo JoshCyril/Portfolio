@@ -78,10 +78,10 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
 
   const getSortLabel = () => {
     switch (filters.sortBy) {
-      case 'date-desc':
-        return 'Date: Newest';
-      case 'date-asc':
-        return 'Date: Oldest';
+    //   case 'date-desc':
+    //     return 'Date: Newest';
+    //   case 'date-asc':
+    //     return 'Date: Oldest';
       case 'title-asc':
         return 'Title: A-Z';
       case 'title-desc':
@@ -96,15 +96,15 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
   return (
     <div
       ref={filterRef}
-      className="p-2 sticky top-0 md:top-28 z-30 mb-4 w-full bg-background/95 backdrop-blur-sm border-b border-border/40"
+      className="sticky top-0 z-30 mb-4 w-full border-b border-border/40 bg-background/95 p-2 backdrop-blur-sm md:top-28"
       style={{ opacity: 0 }}
     >
       <div className="flex flex-col gap-4">
         {/* Search and Controls Row */}
         <div className="flex flex-wrap items-center gap-3">
           {/* Search Input */}
-          <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="relative min-w-[200px] flex-1">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-muted-foreground" />
             <Input
               type="text"
               placeholder="Search projects..."
@@ -116,7 +116,7 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 h-6 w-6"
+                className="absolute right-1 top-1/2 h-6 w-6 -translate-y-1/2 transform"
                 onClick={() => onFiltersChange({ ...filters, searchQuery: '' })}
                 enableRipple
               >
@@ -136,42 +136,42 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
             }}
           >
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="md:min-w-[140px] h-10 w-10 p-0 md:h-auto md:w-auto md:px-3 md:py-2">
-                <Filter className="h-[14px] w-[14px] md:h-4 md:w-4 md:mr-2" />
+              <Button variant="outline" size="icon" className="h-10 w-10 p-0 md:h-auto md:w-auto md:min-w-[140px] md:px-3 md:py-2">
+                <Filter className="h-[14px] w-[14px] md:mr-2 md:h-4 md:w-4" />
                 <span className="hidden md:inline">{getSortLabel()}</span>
-                <ChevronDown className="hidden md:inline ml-2 h-4 w-4" />
+                <ChevronDown className="ml-2 hidden h-4 w-4 md:inline" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="min-w-[200px] md:min-w-[8rem]">
-              <DropdownMenuItem onClick={() => {
+              {/* <DropdownMenuItem onClick={() => {
                 handleSortChange('date-desc');
                 setSortOpen(false);
-              }} className="px-3 py-3 md:px-2 md:py-1.5 text-base md:text-sm min-h-[44px] md:min-h-0">
+              }} className="min-h-[44px] px-3 py-3 text-base md:min-h-0 md:px-2 md:py-1.5 md:text-sm">
                 Date: Newest
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 handleSortChange('date-asc');
                 setSortOpen(false);
-              }} className="px-3 py-3 md:px-2 md:py-1.5 text-base md:text-sm min-h-[44px] md:min-h-0">
+              }} className="min-h-[44px] px-3 py-3 text-base md:min-h-0 md:px-2 md:py-1.5 md:text-sm">
                 Date: Oldest
-              </DropdownMenuItem>
+              </DropdownMenuItem> */}
               <DropdownMenuItem onClick={() => {
                 handleSortChange('title-asc');
                 setSortOpen(false);
-              }} className="px-3 py-3 md:px-2 md:py-1.5 text-base md:text-sm min-h-[44px] md:min-h-0">
+              }} className="min-h-[44px] px-3 py-3 text-base md:min-h-0 md:px-2 md:py-1.5 md:text-sm">
                 Title: A-Z
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 handleSortChange('title-desc');
                 setSortOpen(false);
-              }} className="px-3 py-3 md:px-2 md:py-1.5 text-base md:text-sm min-h-[44px] md:min-h-0">
+              }} className="min-h-[44px] px-3 py-3 text-base md:min-h-0 md:px-2 md:py-1.5 md:text-sm">
                 Title: Z-A
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 handleSortChange('featured-first');
                 setSortOpen(false);
-              }} className="px-3 py-3 md:px-2 md:py-1.5 text-base md:text-sm min-h-[44px] md:min-h-0">
-                Featured First
+              }} className="min-h-[44px] px-3 py-3 text-base md:min-h-0 md:px-2 md:py-1.5 md:text-sm">
+                Featured
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -188,30 +188,30 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
               }}
             >
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="md:min-w-[140px] h-10 w-10 p-0 md:h-auto md:w-auto md:px-3 md:py-2 relative">
-                  <Tags className="h-[14px] w-[14px] md:h-4 md:w-4 md:mr-2" />
+                <Button variant="outline" size="icon" className="relative h-10 w-10 p-0 md:h-auto md:w-auto md:min-w-[140px] md:px-3 md:py-2">
+                  <Tags className="h-[14px] w-[14px] md:mr-2 md:h-4 md:w-4" />
                   <span className="hidden md:inline">Technologies</span>
                   {filters.selectedTags.length > 0 && (
                     <>
-                      <span className="hidden md:inline ml-2 rounded-full bg-primary text-primary-foreground px-1.5 py-0.5 text-xs">
+                      <span className="ml-2 hidden rounded-full bg-primary px-1.5 py-0.5 text-xs text-primary-foreground md:inline">
                         {filters.selectedTags.length}
                       </span>
-                      <span className="md:hidden absolute -top-1 -right-1 rounded-full bg-primary text-primary-foreground text-xs w-5 h-5 flex items-center justify-center">
+                      <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-xs text-primary-foreground md:hidden">
                         {filters.selectedTags.length}
                       </span>
                     </>
                   )}
-                  <ChevronDown className="hidden md:inline ml-2 h-4 w-4" />
+                  <ChevronDown className="ml-2 hidden h-4 w-4 md:inline" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-64 md:w-56 max-h-[400px] overflow-y-auto">
-                <DropdownMenuLabel className="px-3 py-2 md:px-2 md:py-1.5 text-base md:text-sm">Filter by Technology</DropdownMenuLabel>
+              <DropdownMenuContent align="end" className="max-h-[400px] w-64 overflow-y-auto md:w-56">
+                <DropdownMenuLabel className="px-3 py-2 text-base md:px-2 md:py-1.5 md:text-sm">Filter by Technology</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {filters.selectedTags.length > 0 && (
                   <>
                     <DropdownMenuItem
                       onClick={clearAllTags}
-                      className="text-muted-foreground px-3 py-3 md:px-2 md:py-1.5 text-base md:text-sm min-h-[44px] md:min-h-0"
+                      className="min-h-[44px] px-3 py-3 text-base text-muted-foreground md:min-h-0 md:px-2 md:py-1.5 md:text-sm"
                     >
                       <X className="mr-2 h-5 w-5 md:h-4 md:w-4" />
                       Clear all tags
@@ -226,7 +226,7 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
                       key={tag.tag_name}
                       checked={isSelected}
                       onCheckedChange={() => toggleTag(tag.tag_name)}
-                      className="flex items-center gap-2 py-3 md:py-1.5 pl-10 md:pl-8 pr-3 md:pr-2 text-base md:text-sm min-h-[44px] md:min-h-0"
+                      className="flex min-h-[44px] items-center gap-2 py-3 pl-10 pr-3 text-base md:min-h-0 md:py-1.5 md:pl-8 md:pr-2 md:text-sm"
                     >
                       {tag.tag_url && (
                         <Image
@@ -234,11 +234,12 @@ export default function ProjectsFilter({ tags, filters, onFiltersChange }: Proje
                           alt={tag.tag_name}
                           width={20}
                           height={20}
-                          className="rounded-sm md:w-4 md:h-4"
+                          className="rounded-sm md:h-4 md:w-4"
+                          loading="lazy"
                         />
                       )}
                       <span className="flex-1">{tag.tag_name}</span>
-                      <span className="text-sm md:text-xs text-muted-foreground">
+                      <span className="text-sm text-muted-foreground md:text-xs">
                         ({tag.tag_count})
                       </span>
                     </DropdownMenuCheckboxItem>

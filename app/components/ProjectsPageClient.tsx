@@ -61,10 +61,10 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
     // Sort projects
     filtered.sort((a, b) => {
       switch (filters.sortBy) {
-        case 'date-desc':
-          return new Date(b.proDate).getTime() - new Date(a.proDate).getTime();
-        case 'date-asc':
-          return new Date(a.proDate).getTime() - new Date(b.proDate).getTime();
+        // case 'date-desc':
+        //   return new Date(b.proDate).getTime() - new Date(a.proDate).getTime();
+        // case 'date-asc':
+        //   return new Date(a.proDate).getTime() - new Date(b.proDate).getTime();
         case 'title-asc':
           return a.title.localeCompare(b.title);
         case 'title-desc':
@@ -207,8 +207,8 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
 
   return (
     <>
-      {/* <div className="px-3 sticky top-0 md:top-28 z-30 mb-4"> */}
-      <div className="px-3 mb-4">
+      {/* <div className="sticky top-0 z-30 mb-4 px-3 md:top-28"> */}
+      <div className="mb-4 px-3">
         <ProjectsFilter tags={tags} filters={filters} onFiltersChange={setFilters} /></div>
 
 
@@ -256,7 +256,7 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
 
           {/* Show filtered count */}
           {(filters.selectedTags.length > 0 || filters.searchQuery) && (
-            <div className="text-center text-sm text-muted-foreground py-2">
+            <div className="py-2 text-center text-sm text-muted-foreground">
               Showing {filteredProjects.length} of {allProjects.length} loaded project{allProjects.length !== 1 ? 's' : ''}
               {allProjects.length < totalCount && ` (${totalCount} total)`}
             </div>
@@ -264,7 +264,7 @@ export default function ProjectsPageClient({ initialProjects, totalCount, tags }
         </>
       ) : (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <p className="text-lg font-medium text-muted-foreground mb-2">No projects match your filters</p>
+          <p className="mb-2 text-lg font-medium text-muted-foreground">No projects match your filters</p>
           <Button
             variant="outline"
             onClick={() => {

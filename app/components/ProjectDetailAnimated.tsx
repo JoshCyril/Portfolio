@@ -124,7 +124,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
           delay: 2,
           duration: 0.5,
           stagger: 0.1,
-          distance: 20,
+        //   distance: 20,
         });
       }
     }
@@ -143,7 +143,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
             <div className="relative h-full basis-full rounded-lg bg-secondary p-6 shadow-sm">
               {/* image */}
               <div className="flex basis-full justify-center rounded-xl border bg-cover bg-center">
-                <Image src={urlFor(data.proImg).url()} alt={(data.slug || data.title)+" image"} width={720} height={720} className="w-full rounded-xl bg-blue-400 bg-cover bg-center" priority />
+                <Image src={urlFor(data.proImg).url()} alt={(data.slug || data.title)+" image"} width={720} height={720} className="w-full rounded-xl bg-blue-400 bg-cover bg-center" loading="lazy" />
               </div>
 
               {/* skills */}
@@ -152,7 +152,7 @@ export default function ProjectDetailAnimated({ data }: ProjectDetailAnimatedPro
                   <div ref={tagsRef} className="mt-2 flex flex-wrap">
                     {(data.tags ?? []).map((tag, idx) =>(
                       <div key={idx} className="m-1 flex items-center rounded-md border border-primary/20 p-1 pr-2 text-sm leading-5">
-                        <Image src={urlFor(tag.tagImg).url()} alt={tag.title+" image"} width={22} height={22} className="mr-2 rounded-md"/> {tag.title}
+                        <Image src={urlFor(tag.tagImg).url()} alt={tag.title+" image"} width={22} height={22} className="mr-2 rounded-md" loading="lazy" /> {tag.title}
                       </div>
                     ))}
                   </div>
