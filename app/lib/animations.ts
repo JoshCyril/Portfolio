@@ -263,9 +263,20 @@ export const splitTextFadeUp = (
 
   const text = element.textContent || '';
   const words = text.split(' ');
-  element.innerHTML = words
-    .map((word) => `<span style="display: inline-block;">${word}</span>`)
-    .join(' ');
+
+  // Clear existing content and rebuild using DOM APIs to avoid interpreting text as HTML
+  element.textContent = '';
+  words.forEach((word, index) => {
+    const span = document.createElement('span');
+    span.style.display = 'inline-block';
+    span.textContent = word;
+    element.appendChild(span);
+
+    // Re-insert spaces between words (but not after the last word)
+    if (index < words.length - 1) {
+      element.appendChild(document.createTextNode(' '));
+    }
+  });
 
   const wordSpans = element.querySelectorAll('span');
 
