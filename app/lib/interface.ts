@@ -1,94 +1,103 @@
-export interface simpleProject {
+import type { PortableTextBlock } from "@portabletext/types";
+import type { SanityImageSource } from "@sanity/image-url/lib/types/types";
+
+export interface ProjectLink {
   title: string;
-  proImg: any;
-  link: {
-    title: string;
-    url: string;
-  };
-  slug: string;
-  description: string;
-  proDate: string,
-    tags: [{
-      title: string,
-      tagImg: any
-    }],
-    tagCount: number;
+  url: string;
+  description?: string;
 }
 
-export interface fullProject {
+export interface ProjectTag {
   title: string;
-  proImg: any;
-  summary: any;
-  content: any;
+  tagImg: SanityImageSource;
+}
+
+export interface SimpleProject {
+  title: string;
+  proImg: SanityImageSource;
+  link?: ProjectLink;
+  slug: string;
+  description: string;
   proDate: string;
-  links: [{
-    title: string,
-    description: string,
-    url: string,
-  }];
-  slug: string;
-  description: string;
-  gallery: [{
-    asset: any
-  }];
-  tags: [{
-    title: string,
-    tagImg: any
-  }],
+  tags: ProjectTag[];
+  tagCount: number;
+  featured?: boolean;
 }
 
-export interface tags {
+export interface ProjectFilters {
+  selectedTags: string[];
+  searchQuery: string;
+  sortBy:
+    | "date-desc"
+    | "date-asc"
+    | "title-asc"
+    | "title-desc"
+    | "featured-first";
+  featuredOnly: boolean;
+}
+
+export interface ProjectGalleryImage {
+  asset: SanityImageSource;
+}
+
+export interface FullProject {
   title: string;
-  imageUrl: string;
+  proImg: SanityImageSource;
+  summary: PortableTextBlock[];
+  content: PortableTextBlock[];
+  proDate: string;
+  links: ProjectLink[];
+  slug: string;
+  description?: string;
+  gallery: ProjectGalleryImage[];
+  tags: ProjectTag[];
 }
 
-export interface about {
+export interface AboutContent {
   tagline: string;
 }
 
-export interface cvPDF{
+export interface CvPdf {
   fileURL: string;
 }
 
-export interface footerData{
+export interface FooterData {
   copyright: string;
-  udDate: Date;
+  udDate: Date | string;
 }
 
-export interface aboutNTag {
-  about:[{
-    content: any;
-  }],
-  tags:[
-    {
-      tag_name: string,
-      tag_count: number,
-      tag_url: any;
-    }
-  ]
+export interface SkillTag {
+  tag_name: string;
+  tag_count: number;
+  tag_url: SanityImageSource | null;
+}
+
+export interface AboutWithTags {
+  about: Array<{
+    content: PortableTextBlock[];
+  }>;
+  tags: SkillTag[];
 }
 
 export interface Ee3 {
-    exp:[
-      {
-      title: string,
-      yoe: string,
-      content: any,
-      company:
-        {name: string,
-        location: string,
-        url: string,
-        Img: any
-        }
-      }
-    ],
-    edu:[{
-      title: string,
-      uni:{
-        name: string,
-        location: string,
-        url: string,
-        Img: any
-      }
-    }]
+  exp: Array<{
+    title: string;
+    yoe: string;
+    content: PortableTextBlock[];
+    company: {
+      name: string;
+      location: string;
+      url: string;
+      Img: SanityImageSource;
+    };
+  }>;
+  edu: Array<{
+    title: string;
+    uni: {
+      name: string;
+      location: string;
+      url: string;
+      Img: SanityImageSource;
+    };
+  }>;
 }

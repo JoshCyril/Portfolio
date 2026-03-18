@@ -6,10 +6,18 @@ import E3 from "./components/sections/E3";
 export default function Home() {
   return (
     <div className="">
-      <Main/>
-      <Projects/>
-      <About/>
-      <E3/>
+      <div data-main>
+        <Main/>
+      </div>
+      <div data-projects>
+        <Projects/>
+      </div>
+      <div data-about>
+        <About/>
+      </div>
+      <div data-e3>
+        <E3/>
+      </div>
     </div>
   );
 }

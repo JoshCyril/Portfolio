@@ -17,8 +17,8 @@ const data = {
     ],
     datasets: [
       {
-      label: 'Last year',
-      data: [80, 70, 80, 90, 40],
+      label: 'Last Month',
+      data: [80, 100, 80, 30, 70],
       fill: true,
       backgroundColor: 'rgba(152, 152, 152, 0.2)',
       borderColor: 'rgb(152, 152, 152)',
@@ -26,10 +26,10 @@ const data = {
       pointBorderColor: '#eaeaea',
       pointHoverBackgroundColor: '#eaeaea',
       pointHoverBorderColor: 'rgb(152, 152, 152)'
-    }, 
+    },
     {
-      label: 'This Year',
-      data: [90, 80, 80, 70, 100],
+      label: 'This Month',
+      data: [90, 70, 80, 70, 100],
       fill: true,
       backgroundColor: 'rgba(54, 162, 235, 0.2)',
       borderColor: 'rgb(54, 162, 235)',

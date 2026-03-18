@@ -1,50 +1,65 @@
-import Link from "next/link";
+import ProjectsPageAnimated from "../components/ProjectsPageAnimated";
+import { SimpleProject, SkillTag } from "@/app/lib/interface";
 import { client } from "@/app/lib/sanity";
-import { simpleProject } from "@/app/lib/interface";
-import ProjectCard from "../components/ProjectCard";
+import { cache } from "react";
 
-export const revalidate = 30 // revalidate at most 30 sec
+export const revalidate = 30; // revalidate at most 30 sec
 
-async function getData(){
-    const query = `
-    *[_type == "project"]|order(pDate desc){
+const PAGE_SIZE = 6;
+
+const getProjects = cache(async (limit: number = PAGE_SIZE, offset: number = 0) => {
+  const query = `
+    *[_type == "project"] | order(pDate desc) [$start...$end]{
+      title,
+      proImg,
+      "link": links[0]{title,url},
+      "slug": slug.current,
+      description,
+      proDate,
+      featured,
+      "tags": tags[]->{
         title,
-        proImg,
-        "link": links[0]{title,url},
-        "slug": slug.current,
-        description,
-        proDate,
-        "tags": tags[0...3]->{
-          title,
-          tagImg
-        },
-        "tagCount": count(tags)-3
-      }
-    `;
+        tagImg
+      },
+      "tagCount": select(count(tags) > 3 => count(tags) - 3, 0)
+    }
+  `;
 
-    const data = await client.fetch(query);
-    return data;
-}
+  return client.fetch<SimpleProject[]>(query, {
+    start: offset,
+    end: offset + limit,
+  });
+});
 
-export default async function projects(){
-    const data:simpleProject[] = await getData();
+const getTags = cache(async () => {
+  const query = `
+    *[_type == "tag"]{
+      "tag_name": title,
+      "tag_url": tagImg,
+      "tag_count": count(*[_type == "project" && references(^._id)])
+    } | order(tag_count desc)
+  `;
+  const data = await client.fetch<SkillTag[]>(query);
+  return data.filter((tag) => tag.tag_count > 0);
+});
 
-    return (
-        <div className="mb-10 grid h-fit place-items-center py-6 md:mt-28">
+const getTotalCount = cache(async (): Promise<number> => {
+  const query = `count(*[_type == "project"])`;
+  return client.fetch<number>(query);
+});
 
-        <div className="z-10 w-11/12 max-w-screen-2xl">
+export default async function ProjectsPage() {
+  const [initialProjects, totalCount, tags] = await Promise.all([
+    getProjects(PAGE_SIZE, 0),
+    getTotalCount(),
+    getTags(),
+  ]);
 
-            <div className="relative col-span-4 mb-4 ml-3 flex w-full basis-full items-center py-2">
-                <div className="absolute -ml-[13px] h-full w-1 rounded-3xl bg-primary"></div>
-                <span className="flex text-2xl font-bold md:text-3xl">Check out my Projects</span>
-            </div>
-
-            <div className="div flex flex-wrap py-3">
-                {data.map((project, idx) =>(
-                    <ProjectCard key={idx} {...project} />
-                ))}
-            </div>
-        </div>
-    </div>
-    )
+  return (
+    <ProjectsPageAnimated
+      initialProjects={initialProjects}
+      totalCount={totalCount}
+      tags={tags}
+    />
+  );
 }
